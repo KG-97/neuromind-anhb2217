@@ -1,4 +1,5 @@
 export enum Tab {
+  HOME = 'HOME',
   NEURON = 'NEURON',
   ELECTRO = 'ELECTRO',
   ANATOMY = 'ANATOMY',

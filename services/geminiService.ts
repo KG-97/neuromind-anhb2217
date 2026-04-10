@@ -1,10 +1,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
+const QUIZ_ERROR = JSON.stringify({
+  error: "Failed to generate a valid quiz question. Please try again."
+});
+
 export const generateQuizQuestion = async (topic: string): Promise<string> => {
-  if (!apiKey) return JSON.stringify({ error: "API Key missing" });
+  if (!apiKey) {
+    return JSON.stringify({ error: "Gemini API key missing. Add VITE_GEMINI_API_KEY to .env.local." });
+  }
 
   try {
     const response = await ai.models.generateContent({
@@ -25,15 +31,29 @@ export const generateQuizQuestion = async (topic: string): Promise<string> => {
         }
       }
     });
-    return response.text || "{}";
+
+    const text = response.text?.trim();
+    if (!text) return QUIZ_ERROR;
+
+    const parsed = JSON.parse(text);
+    const isValid =
+      typeof parsed.question === 'string' &&
+      Array.isArray(parsed.options) &&
+      parsed.options.length === 4 &&
+      typeof parsed.correctAnswer === 'number' &&
+      parsed.correctAnswer >= 0 &&
+      parsed.correctAnswer < 4 &&
+      typeof parsed.explanation === 'string';
+
+    return isValid ? JSON.stringify(parsed) : QUIZ_ERROR;
   } catch (error) {
     console.error("Gemini Quiz Error:", error);
-    return JSON.stringify({ error: "Failed to generate quiz." });
+    return QUIZ_ERROR;
   }
 };
 
 export const explainConcept = async (concept: string): Promise<string> => {
-  if (!apiKey) return "API Key is missing. Please check your configuration.";
+  if (!apiKey) return "Gemini API key is missing. Add VITE_GEMINI_API_KEY to .env.local.";
 
   try {
     const response = await ai.models.generateContent({
@@ -42,9 +62,9 @@ export const explainConcept = async (concept: string): Promise<string> => {
       Include key terminology (e.g., ions, channels, anatomical structures) where relevant. 
       If applicable, mention a clinical correlate.`,
     });
-    return response.text || "No explanation available.";
+    return response.text?.trim() || "No explanation available.";
   } catch (error) {
     console.error("Gemini Explanation Error:", error);
-    return "Sorry, I encountered an error while fetching the explanation.";
+    return "Sorry, I hit an error while fetching the explanation.";
   }
 };
