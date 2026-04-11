@@ -61,13 +61,16 @@ const App: React.FC = () => {
           <button
             className="md:hidden p-2 text-slate-600"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-2 shadow-lg absolute w-full left-0">
+          <div id="mobile-navigation" className="md:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-2 shadow-lg absolute w-full left-0">
             <NavItem tab={Tab.HOME} label="Dashboard" icon={House} />
             <NavItem tab={Tab.NEURON} label="Neuron Model" icon={Activity} />
             <NavItem tab={Tab.ELECTRO} label="Electrophysiology" icon={Zap} />
