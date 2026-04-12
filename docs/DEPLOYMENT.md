@@ -31,3 +31,19 @@ After deployment, verify:
 3. AI tutor explains a concept when the key is configured
 4. build contains the workbook HTML under `/workbooks/`
 5. the app works on mobile without the nav exploding into modern art
+
+
+## Release gate (latest reassessment)
+
+Latest formal readiness check: **April 12, 2026**.
+
+- Status: **Ready to deploy** (typecheck/build/workbook artifact checks passed)
+- Detailed report: [`docs/RELEASE_REASSESSMENT_2026-04-12.md`](./RELEASE_REASSESSMENT_2026-04-12.md)
+
+If this date gets stale, re-run:
+
+```bash
+npm run typecheck
+npm run build
+test -f dist/workbooks/lab5-spinal-cord-workbook.html
+```
