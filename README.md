@@ -82,10 +82,11 @@ The local dev server runs on `http://localhost:3000`.
 ## Scripts
 
 ```bash
-npm run dev        # Start local development server
-npm run build      # Build for production
-npm run preview    # Preview production build locally
-npm run typecheck  # Run TypeScript checks
+npm run dev         # Start local development server
+npm run build       # Build for production
+npm run launch:test # Verify typecheck + production build
+npm run preview     # Preview production build locally
+npm run typecheck   # Run TypeScript checks
 ```
 
 ## Deployment notes
