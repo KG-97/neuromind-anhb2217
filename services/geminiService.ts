@@ -14,9 +14,8 @@ export const generateQuizQuestion = async (topic: string): Promise<string> => {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-latest',
-      contents: `Generate a challenging multiple-choice question for a university-level Human Neurobiology student about: ${topic}.
-      Focus on physiological mechanisms, anatomical relationships, or clinical correlates.`,
+      model: 'gemini-2.5-flash',
+      contents: `Generate a challenging multiple-choice question for a university-level Human Neurobiology student about: ${topic}. Focus on physiological mechanisms, anatomical relationships, or clinical correlates.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -42,29 +41,29 @@ export const generateQuizQuestion = async (topic: string): Promise<string> => {
       parsed.options.length === 4 &&
       typeof parsed.correctAnswer === 'number' &&
       parsed.correctAnswer >= 0 &&
-      parsed.correctAnswer < 4 &&
+      parsed.correctAnswer <= 3 &&
       typeof parsed.explanation === 'string';
 
-    return isValid ? JSON.stringify(parsed) : QUIZ_ERROR;
-  } catch (error) {
-    console.error("Gemini Quiz Error:", error);
+    return isValid ? text : QUIZ_ERROR;
+  } catch (e) {
+    console.error('Gemini quiz error:', e);
     return QUIZ_ERROR;
   }
 };
 
 export const explainConcept = async (concept: string): Promise<string> => {
-  if (!apiKey) return "Gemini API key is missing. Add VITE_GEMINI_API_KEY to .env.local.";
+  if (!apiKey) {
+    return "Gemini API key missing. Add VITE_GEMINI_API_KEY to .env.local.";
+  }
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-latest',
-      contents: `Explain the neurobiological concept "${concept}" clearly and concisely for a university student. 
-      Include key terminology (e.g., ions, channels, anatomical structures) where relevant. 
-      If applicable, mention a clinical correlate.`,
+      model: 'gemini-2.5-flash',
+      contents: `Explain the following neurobiology concept in clear, student-friendly language suitable for a university Human Neurobiology course (ANHB2217). Include the key mechanism, why it matters clinically or functionally, and one memorable analogy if possible: ${concept}`,
     });
-    return response.text?.trim() || "No explanation available.";
-  } catch (error) {
-    console.error("Gemini Explanation Error:", error);
-    return "Sorry, I hit an error while fetching the explanation.";
+    return response.text || "No explanation generated.";
+  } catch (e) {
+    console.error('Gemini explain error:', e);
+    return "Failed to generate explanation. Please try again.";
   }
 };
