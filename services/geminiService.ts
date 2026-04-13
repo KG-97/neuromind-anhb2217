@@ -1,38 +1,58 @@
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-const BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
-// Try newest model first — gemini-3-flash-preview, then fallbacks
-const MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-lite'];
+// Uses GitHub Models API (free, no quota issues) with OpenAI-compatible endpoint
+// Token injected at build time via VITE_GITHUB_TOKEN secret
+const ghToken = import.meta.env.VITE_GITHUB_TOKEN || '';
+const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
 
-async function geminiPost(prompt: string, jsonMode = false): Promise<string> {
-  if (!apiKey) throw new Error('Gemini API key missing. Set VITE_GEMINI_API_KEY in GitHub secrets.');
+// GitHub Models: free OpenAI-compatible API using your GitHub token
+async function githubModelsPost(prompt: string): Promise<string> {
+  const res = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${ghToken}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1000,
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.error?.message || JSON.stringify(data));
+  return data.choices?.[0]?.message?.content ?? '';
+}
+
+// Gemini REST fallback
+async function geminiPost(prompt: string): Promise<string> {
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite'];
   let lastErr: any;
-  for (const model of MODELS) {
+  for (const model of models) {
     try {
-      const body: any = { contents: [{ role: 'user', parts: [{ text: prompt }] }] };
-      if (jsonMode) body.generationConfig = { responseMimeType: 'application/json' };
-      const res = await fetch(`${BASE}/${model}:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        const msg = data?.error?.message || JSON.stringify(data);
-        // Only retry on quota/not-found errors
-        if (res.status === 429 || res.status === 404 || res.status === 403) {
-          lastErr = new Error(`[${model}] ${msg}`);
-          continue;
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] }),
         }
-        throw new Error(`[${model}] ${msg}`);
-      }
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-      return text;
-    } catch (e: any) {
-      lastErr = e;
-      if (!e.message?.includes('429') && !e.message?.includes('quota') && !e.message?.includes('RESOURCE_EXHAUSTED')) throw e;
-    }
+      );
+      const data = await res.json();
+      if (!res.ok) { lastErr = new Error(data?.error?.message || res.status); continue; }
+      return data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    } catch(e) { lastErr = e; }
   }
   throw lastErr;
+}
+
+async function callAI(prompt: string): Promise<string> {
+  // Try GitHub Models first (free, reliable), then Gemini
+  if (ghToken) {
+    try { return await githubModelsPost(prompt); } catch(e) { console.warn('GitHub Models failed, trying Gemini:', e); }
+  }
+  if (geminiKey) {
+    return await geminiPost(prompt);
+  }
+  throw new Error('No AI API key configured. Set VITE_GITHUB_TOKEN or VITE_GEMINI_API_KEY in GitHub secrets.');
 }
 
 const QUIZ_ERROR = JSON.stringify({ error: 'Failed to generate quiz. Please try again.' });
@@ -41,11 +61,11 @@ export const generateQuizQuestion = async (topic: string): Promise<string> => {
   try {
     const prompt = `Generate a challenging multiple-choice question for a university Human Neurobiology student (ANHB2217) about: ${topic}.
 
-Return ONLY valid JSON — no markdown, no code fences:
+Return ONLY valid JSON with no markdown or code fences:
 {"question":"...","options":["A. ...","B. ...","C. ...","D. ..."],"correctAnswer":0,"explanation":"..."}
 
 correctAnswer is the 0-based index of the correct option.`;
-    const raw = (await geminiPost(prompt, true)).trim();
+    const raw = (await callAI(prompt)).trim();
     const clean = raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```$/,'').trim();
     const parsed = JSON.parse(clean);
     const ok = typeof parsed.question==='string' && Array.isArray(parsed.options) &&
@@ -60,7 +80,7 @@ correctAnswer is the 0-based index of the correct option.`;
 
 export const explainConcept = async (concept: string): Promise<string> => {
   try {
-    return await geminiPost(`Explain this neurobiology concept for an ANHB2217 student — clear mechanism, clinical relevance, one analogy: ${concept}`);
+    return await callAI(`Explain this neurobiology concept for an ANHB2217 university student. Include: key mechanism, clinical relevance, one memorable analogy. Concept: ${concept}`);
   } catch(e:any) {
     console.error('Explain error:', e);
     return `Error: ${e?.message||String(e)}`;
