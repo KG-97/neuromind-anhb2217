@@ -1,7 +1,28 @@
-// Uses GitHub Models API (free, no quota issues) with OpenAI-compatible endpoint
-// Token injected at build time via VITE_GITHUB_TOKEN secret
+// AI service: tries OpenRouter (free models) → GitHub Models → Gemini
+const openRouterKey = import.meta.env.VITE_OPENROUTER_API_KEY || '';
 const ghToken = import.meta.env.VITE_GITHUB_TOKEN || '';
 const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+
+// OpenRouter: free models via OpenAI-compatible API
+async function openRouterPost(prompt: string): Promise<string> {
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${openRouterKey}`,
+      'HTTP-Referer': 'https://kg-97.github.io/neuromind-anhb2217/',
+      'X-Title': 'NeuroMind ANHB2217',
+    },
+    body: JSON.stringify({
+      model: 'meta-llama/llama-3.2-3b-instruct:free',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1000,
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.error?.message || JSON.stringify(data));
+  return data.choices?.[0]?.message?.content ?? '';
+}
 
 // GitHub Models: free OpenAI-compatible API using your GitHub token
 async function githubModelsPost(prompt: string): Promise<string> {
@@ -45,14 +66,19 @@ async function geminiPost(prompt: string): Promise<string> {
 }
 
 async function callAI(prompt: string): Promise<string> {
-  // Try GitHub Models first (free, reliable), then Gemini
+  // Try OpenRouter first (free models, reliable)
+  if (openRouterKey) {
+    try { return await openRouterPost(prompt); } catch(e) { console.warn('OpenRouter failed, trying GitHub Models:', e); }
+  }
+  // Try GitHub Models
   if (ghToken) {
     try { return await githubModelsPost(prompt); } catch(e) { console.warn('GitHub Models failed, trying Gemini:', e); }
   }
+  // Try Gemini
   if (geminiKey) {
     return await geminiPost(prompt);
   }
-  throw new Error('No AI API key configured. Set VITE_GITHUB_TOKEN or VITE_GEMINI_API_KEY in GitHub secrets.');
+  throw new Error('No AI API key configured.');
 }
 
 const QUIZ_ERROR = JSON.stringify({ error: 'Failed to generate quiz. Please try again.' });
@@ -60,10 +86,8 @@ const QUIZ_ERROR = JSON.stringify({ error: 'Failed to generate quiz. Please try 
 export const generateQuizQuestion = async (topic: string): Promise<string> => {
   try {
     const prompt = `Generate a challenging multiple-choice question for a university Human Neurobiology student (ANHB2217) about: ${topic}.
-
 Return ONLY valid JSON with no markdown or code fences:
 {"question":"...","options":["A. ...","B. ...","C. ...","D. ..."],"correctAnswer":0,"explanation":"..."}
-
 correctAnswer is the 0-based index of the correct option.`;
     const raw = (await callAI(prompt)).trim();
     const clean = raw.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```$/,'').trim();
