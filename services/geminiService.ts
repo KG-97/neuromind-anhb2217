@@ -1,60 +1,56 @@
+import { GoogleGenAI, Type } from "@google/genai";
+
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const ai = new GoogleGenAI({ apiKey });
+
+// Try models in order of preference
+const MODELS = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-2.0-flash'];
 
 const QUIZ_ERROR = JSON.stringify({
-  error: 'Failed to generate a valid quiz question. Please try again.'
+  error: "Failed to generate a valid quiz question. Please try again."
 });
 
-async function callGemini(prompt: string, jsonSchema?: object): Promise<string> {
-  if (!apiKey) {
-    throw new Error('Gemini API key missing. Set VITE_GEMINI_API_KEY in GitHub Secrets.');
+async function tryGenerateContent(params: { contents: string; config?: object }) {
+  let lastError: any;
+  for (const model of MODELS) {
+    try {
+      const response = await ai.models.generateContent({ model, ...params });
+      return response;
+    } catch (e: any) {
+      lastError = e;
+      // Only try next model if it's a quota/not-found issue
+      if (!e?.message?.includes('RESOURCE_EXHAUSTED') && !e?.message?.includes('not found') && !e?.message?.includes('404')) {
+        throw e;
+      }
+    }
   }
-
-  const body: any = {
-    contents: [{ parts: [{ text: prompt }] }]
-  };
-
-  if (jsonSchema) {
-    body.generationConfig = {
-      responseMimeType: 'application/json',
-      responseSchema: jsonSchema
-    };
-  }
-
-  const res = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(JSON.stringify(data));
-  }
-
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error('Empty response from Gemini API');
-  return text;
+  throw lastError;
 }
 
 export const generateQuizQuestion = async (topic: string): Promise<string> => {
+  if (!apiKey) {
+    return JSON.stringify({ error: "Gemini API key missing. Add VITE_GEMINI_API_KEY to .env.local." });
+  }
   try {
-    const text = await callGemini(
-      `Generate a challenging multiple-choice question for a university-level Human Neurobiology student about: ${topic}. Focus on physiological mechanisms, anatomical relationships, or clinical correlates.`,
-      {
-        type: 'object',
-        properties: {
-          question: { type: 'string' },
-          options: { type: 'array', items: { type: 'string' } },
-          correctAnswer: { type: 'integer', description: 'Index of the correct answer (0-3)' },
-          explanation: { type: 'string', description: 'Detailed explanation of why the answer is correct.' }
-        },
-        required: ['question', 'options', 'correctAnswer', 'explanation']
+    const response = await tryGenerateContent({
+      contents: `Generate a challenging multiple-choice question for a university-level Human Neurobiology student about: ${topic}. Focus on physiological mechanisms, anatomical relationships, or clinical correlates.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            question: { type: Type.STRING },
+            options: { type: Type.ARRAY, items: { type: Type.STRING } },
+            correctAnswer: { type: Type.INTEGER, description: "Index of the correct answer (0-3)" },
+            explanation: { type: Type.STRING, description: "Detailed explanation of why the answer is correct." }
+          },
+          required: ["question", "options", "correctAnswer", "explanation"]
+        }
       }
-    );
-
-    const parsed = JSON.parse(text.trim());
+    });
+    const text = response.text?.trim();
+    if (!text) return QUIZ_ERROR;
+    const parsed = JSON.parse(text);
     const isValid =
       typeof parsed.question === 'string' &&
       Array.isArray(parsed.options) &&
@@ -63,21 +59,24 @@ export const generateQuizQuestion = async (topic: string): Promise<string> => {
       parsed.correctAnswer >= 0 &&
       parsed.correctAnswer <= 3 &&
       typeof parsed.explanation === 'string';
-
-    return isValid ? JSON.stringify(parsed) : QUIZ_ERROR;
+    return isValid ? text : QUIZ_ERROR;
   } catch (e: any) {
-    console.error('Quiz error:', e);
+    console.error('Gemini quiz error:', e);
     return JSON.stringify({ error: `API Error: ${e?.message || String(e)}` });
   }
 };
 
 export const explainConcept = async (concept: string): Promise<string> => {
+  if (!apiKey) {
+    return "Gemini API key missing. Add VITE_GEMINI_API_KEY to .env.local.";
+  }
   try {
-    return await callGemini(
-      `Explain the following neurobiology concept in clear, student-friendly language suitable for a university Human Neurobiology course (ANHB2217). Include the key mechanism, why it matters clinically or functionally, and one memorable analogy if possible: ${concept}`
-    );
+    const response = await tryGenerateContent({
+      contents: `Explain the following neurobiology concept in clear, student-friendly language suitable for a university Human Neurobiology course (ANHB2217). Include the key mechanism, why it matters clinically or functionally, and one memorable analogy if possible: ${concept}`,
+    });
+    return response.text || "No explanation generated.";
   } catch (e: any) {
-    console.error('Explain error:', e);
+    console.error('Gemini explain error:', e);
     return `API Error: ${e?.message || String(e)}`;
   }
 };
