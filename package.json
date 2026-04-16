@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:gh-pages": "VITE_BASE_PATH=/neuromind-anhb2217/ vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy:vercel": "npx vercel deploy --prod --yes"
   },
   "dependencies": {
     "@google/genai": "^1.40.0",
