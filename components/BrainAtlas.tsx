@@ -46,18 +46,32 @@ const regions: BrainRegion[] = [
     clinical: 'Parkinson\'s Disease (hypokinetic), Huntington\'s Disease (hyperkinetic).'
   },
   {
-    id: 'thalamus',
-    name: 'Thalamus',
-    location: 'Diencephalon',
-    function: 'Sensory relay station (except smell), regulation of consciousness.',
-    clinical: 'Thalamic pain syndrome, coma.'
-  },
-  {
     id: 'brainstem',
     name: 'Brainstem',
-    location: 'Connects Cerebrum to Spinal Cord',
-    function: 'Vital functions (breathing, heart rate), cranial nerve nuclei, ascending/descending tracts.',
-    clinical: 'Locked-in syndrome, respiratory failure, cranial nerve palsies.'
+    location: 'Posterior fossa, connecting cerebrum to spinal cord',
+    function: 'Controls vital autonomic functions (breathing, heart rate, BP). Houses cranial nerve nuclei III-XII. Reticular activating system (consciousness).',
+    clinical: 'Locked-in syndrome (basilar artery stroke). Wallenberg syndrome: ipsilateral facial loss, contralateral body loss.'
+  },
+  {
+    id: 'thalamus',
+    name: 'Thalamus',
+    location: 'Diencephalon, central relay station',
+    function: 'Relay hub for all sensory input (except olfaction) to cortex. Gates conscious awareness. Mediates sleep/wake via reticular nucleus.',
+    clinical: 'Thalamic pain syndrome (Dejerine-Roussy): severe contralateral pain after stroke.'
+  },
+  {
+    id: 'hippocampus',
+    name: 'Hippocampus',
+    location: 'Medial temporal lobe',
+    function: 'Memory consolidation (short to long-term). Spatial navigation. Declarative/episodic memory. Limbic system.',
+    clinical: 'Bilateral damage causes anterograde amnesia (H.M. case). First region in Alzheimer disease. Temporal lobe epilepsy focus.'
+  },
+  {
+    id: 'hypothalamus',
+    name: 'Hypothalamus',
+    location: 'Diencephalon, below thalamus, above pituitary',
+    function: 'Homeostasis: temperature, hunger, thirst, circadian rhythms, HPA axis. Controls pituitary via releasing factors.',
+    clinical: 'Craniopharyngioma causes diabetes insipidus, obesity, visual defects. Lesions cause thermodysregulation.'
   }
 ];
 

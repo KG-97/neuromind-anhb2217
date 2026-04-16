@@ -3,6 +3,22 @@ import { generateQuizQuestion, explainConcept } from '../services/geminiService'
 import { QuizQuestion } from '../types';
 import { Bot, BookOpen, CheckCircle, XCircle, HelpCircle, GraduationCap } from 'lucide-react';
 
+
+const renderMarkdown = (text: string) => {
+  const lines = text.split('\n');
+  return lines.map((line, i) => {
+    const parts = line.split(/(\*\*[^*]+\*\*)/);
+    return (
+      <p key={i} className={line === '' ? 'mt-2' : ''}>
+        {parts.map((part, j) =>
+          part.startsWith('**') && part.endsWith('**')
+            ? <strong key={j}>{part.slice(2, -2)}</strong>
+            : part
+        )}
+      </p>
+    );
+  });
+};
 const AITutor: React.FC = () => {
   const [activeMode, setActiveMode] = useState<'quiz' | 'explain'>('quiz');
 
@@ -175,7 +191,7 @@ const AITutor: React.FC = () => {
             </div>
             {explanation && (
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800 whitespace-pre-wrap">{explanation}</p>
+                <p className="text-sm text-blue-800 whitespace-pre-wrap">{renderMarkdown(explanation)}</p>
               </div>
             )}
           </div>

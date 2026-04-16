@@ -103,6 +103,10 @@ const ActionPotentialLab: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="time" hide />
               <YAxis domain={[-90, 40]} label={{ value: 'Membrane Potential (mV)', angle: -90, position: 'insideLeft' }} />
+              <ReferenceLine x={21} label={{ value: 'Depolarization', position: 'top', fill: '#475569', fontSize: 11 }} stroke="#94a3b8" strokeDasharray="4 4" />
+              <ReferenceLine x={30} label={{ value: 'Peak', position: 'top', fill: '#475569', fontSize: 11 }} stroke="#94a3b8" strokeDasharray="4 4" />
+              <ReferenceLine x={40} label={{ value: 'Repolarization', position: 'top', fill: '#475569', fontSize: 11 }} stroke="#94a3b8" strokeDasharray="4 4" />
+              <ReferenceLine x={55} label={{ value: 'Hyperpolarization', position: 'top', fill: '#475569', fontSize: 11 }} stroke="#94a3b8" strokeDasharray="4 4" />
               <ReferenceLine y={-55} label="Threshold" stroke="red" strokeDasharray="3 3" />
               <ReferenceLine y={-70} label="Resting" stroke="green" strokeDasharray="3 3" />
               <Tooltip 

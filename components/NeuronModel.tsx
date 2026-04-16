@@ -64,9 +64,9 @@ const NeuronModel: React.FC = () => {
 
               {/* Nodes of Ranvier (The gaps) */}
               <g onClick={() => handleSelect('nodes')}>
-                 <circle cx="310" cy="200" r="8" fill="transparent" className="cursor-pointer hover:stroke-red-500 hover:stroke-2" />
-                 <circle cx="410" cy="200" r="8" fill="transparent" className="cursor-pointer hover:stroke-red-500 hover:stroke-2" />
-                 <circle cx="510" cy="200" r="8" fill="transparent" className="cursor-pointer hover:stroke-red-500 hover:stroke-2" />
+                 <circle cx="310" cy="200" r="8" fill="transparent" stroke="#e2e8f0" strokeWidth="2" className="cursor-pointer hover:stroke-red-500 hover:stroke-[3]" />
+                 <circle cx="410" cy="200" r="8" fill="transparent" stroke="#e2e8f0" strokeWidth="2" className="cursor-pointer hover:stroke-red-500 hover:stroke-[3]" />
+                 <circle cx="510" cy="200" r="8" fill="transparent" stroke="#e2e8f0" strokeWidth="2" className="cursor-pointer hover:stroke-red-500 hover:stroke-[3]" />
               </g>
 
               {/* Soma */}

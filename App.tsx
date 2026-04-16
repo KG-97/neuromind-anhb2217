@@ -87,7 +87,7 @@ const App: React.FC = () => {
             © {new Date().getFullYear()} ANHB2217 Study Tool. Powered by React & Gemini AI.
           </p>
           <a
-            href="/workbooks/lab5-spinal-cord-workbook.html"
+            href={`${import.meta.env.BASE_URL}workbooks/lab5-spinal-cord-workbook.html`}
             target="_blank"
             rel="noreferrer"
             className="text-sm font-medium text-blue-600 hover:text-blue-800"

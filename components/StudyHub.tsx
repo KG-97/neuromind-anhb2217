@@ -25,7 +25,7 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a
-                href="/workbooks/lab5-spinal-cord-workbook.html"
+                href={`${import.meta.env.BASE_URL}workbooks/lab5-spinal-cord-workbook.html`}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
@@ -56,8 +56,8 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
               <p className="text-sm text-slate-500 mt-1">Quiz questions in Lab 5</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <p className="text-2xl font-bold text-slate-900">1</p>
-              <p className="text-sm text-slate-500 mt-1">Env path to configure</p>
+              <p className="text-2xl font-bold text-slate-900">Powered</p>
+              <p className="text-sm text-slate-500 mt-1">Gemini 2.5 AI</p>
             </div>
           </div>
         </div>
