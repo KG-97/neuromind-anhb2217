@@ -16,6 +16,29 @@
 ### Vercel
 Good default for the React app. Minimal setup and easy previews.
 
+#### Live deployment (CLI)
+
+```bash
+npm install
+npm run typecheck
+npm run build
+vercel login
+npm run deploy:vercel
+```
+
+This repo now defaults Vite `base` to `/` for Vercel/Netlify deployments.
+If you need GitHub Pages pathing instead, use:
+
+```bash
+npm run build:gh-pages
+```
+
+If you already have `VERCEL_TOKEN` in your environment, you can skip `vercel login` and run non-interactively:
+
+```bash
+npx vercel deploy --prod --yes --token "$VERCEL_TOKEN"
+```
+
 ### Netlify
 Also fine for static hosting.
 
