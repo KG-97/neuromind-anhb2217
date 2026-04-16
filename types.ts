@@ -14,6 +14,15 @@ export interface BrainRegion {
   clinical: string;
 }
 
+export interface CranialNerve {
+  number: number;
+  name: string;
+  type: 'Motor' | 'Sensory' | 'Both';
+  foramen: string;
+  function: string;
+  clinical: string;
+}
+
 export interface QuizQuestion {
   question: string;
   options: string[];

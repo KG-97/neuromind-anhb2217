@@ -48,7 +48,7 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
               <p className="text-sm text-slate-500 mt-1">Workbook ready to use</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <p className="text-2xl font-bold text-slate-900">4</p>
+              <p className="text-2xl font-bold text-slate-900">5</p>
               <p className="text-sm text-slate-500 mt-1">Interactive support tools</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Brain, Search, MapPin, Activity, AlertCircle } from 'lucide-react';
 import { BrainRegion } from '../types';
+import CranialNerveNavigator from './CranialNerveNavigator';
 
 const regions: BrainRegion[] = [
   {
@@ -77,6 +78,7 @@ const regions: BrainRegion[] = [
 
 const BrainAtlas: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeSection, setActiveSection] = useState<'regions' | 'nerves'>('regions');
 
   const filteredRegions = regions.filter(r => 
     r.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -104,8 +106,32 @@ const BrainAtlas: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto custom-scroll pb-4">
-        {filteredRegions.map((region) => (
+      <div className="mb-4 flex gap-2">
+        <button
+          onClick={() => setActiveSection('regions')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            activeSection === 'regions'
+              ? 'bg-purple-600 text-white'
+              : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
+          }`}
+        >
+          Brain Regions
+        </button>
+        <button
+          onClick={() => setActiveSection('nerves')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            activeSection === 'nerves'
+              ? 'bg-purple-600 text-white'
+              : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
+          }`}
+        >
+          Cranial Nerves
+        </button>
+      </div>
+
+      {activeSection === 'regions' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto custom-scroll pb-4">
+          {filteredRegions.map((region) => (
           <div key={region.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-md transition-shadow group">
             <div className="flex justify-between items-start mb-3">
               <h3 className="text-lg font-bold text-slate-800 group-hover:text-purple-700 transition-colors">{region.name}</h3>
@@ -128,7 +154,10 @@ const BrainAtlas: React.FC = () => {
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      ) : (
+        <CranialNerveNavigator />
+      )}
     </div>
   );
 };
