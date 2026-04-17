@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Activity, Zap, Brain, GraduationCap, Menu, X, House } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Activity, Zap, Brain, GraduationCap, Menu, X, House, Download } from 'lucide-react';
 import { Tab } from './types';
 import StudyHub from './components/StudyHub';
 import NeuronModel from './components/NeuronModel';
@@ -7,9 +7,44 @@ import ActionPotentialLab from './components/ActionPotentialLab';
 import BrainAtlas from './components/BrainAtlas';
 import AITutor from './components/AITutor';
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+}
+
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>(Tab.HOME);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const onBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as BeforeInstallPromptEvent);
+    };
+
+    const onAppInstalled = () => {
+      setInstallPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    window.addEventListener('appinstalled', onAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', onAppInstalled);
+    };
+  }, []);
+
+  const handleInstall = async () => {
+    if (!installPrompt) {
+      return;
+    }
+
+    await installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -58,12 +93,23 @@ const App: React.FC = () => {
             <NavItem tab={Tab.TUTOR} label="Study Vault" icon={GraduationCap} />
           </nav>
 
-          <button
-            className="md:hidden p-2 text-slate-600"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X /> : <Menu />}
-          </button>
+          <div className="flex items-center gap-2">
+            {installPrompt && (
+              <button
+                onClick={handleInstall}
+                className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
+              >
+                <Download size={16} />
+                Download App
+              </button>
+            )}
+            <button
+              className="md:hidden p-2 text-slate-600"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
 
         {mobileMenuOpen && (
@@ -73,6 +119,15 @@ const App: React.FC = () => {
             <NavItem tab={Tab.ELECTRO} label="Electrophysiology" icon={Zap} />
             <NavItem tab={Tab.ANATOMY} label="Neuroanatomy" icon={Brain} />
             <NavItem tab={Tab.TUTOR} label="Study Vault" icon={GraduationCap} />
+            {installPrompt && (
+              <button
+                onClick={handleInstall}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
+              >
+                <Download size={16} />
+                Download App
+              </button>
+            )}
           </div>
         )}
       </header>
