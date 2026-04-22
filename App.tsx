@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Activity, Zap, Brain, GraduationCap, Menu, X, House, Download } from 'lucide-react';
 import { Tab } from './types';
 import StudyHub from './components/StudyHub';
-import NeuronModel from './components/NeuronModel';
+import NeuronLab from './components/NeuronLab';
 import ActionPotentialLab from './components/ActionPotentialLab';
 import BrainAtlas from './components/BrainAtlas';
 import AITutor from './components/AITutor';
@@ -49,7 +49,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (activeTab) {
       case Tab.HOME: return <StudyHub onNavigate={setActiveTab} />;
-      case Tab.NEURON: return <NeuronModel />;
+      case Tab.NEURON: return <NeuronLab />;
       case Tab.ELECTRO: return <ActionPotentialLab />;
       case Tab.ANATOMY: return <BrainAtlas />;
       case Tab.TUTOR: return <AITutor />;
@@ -87,7 +87,7 @@ const App: React.FC = () => {
 
           <nav className="hidden md:flex items-center gap-2">
             <NavItem tab={Tab.HOME} label="Dashboard" icon={House} />
-            <NavItem tab={Tab.NEURON} label="Neuron" icon={Activity} />
+            <NavItem tab={Tab.NEURON} label="Neuron Lab" icon={Activity} />
             <NavItem tab={Tab.ELECTRO} label="Electrophysiology" icon={Zap} />
             <NavItem tab={Tab.ANATOMY} label="Anatomy" icon={Brain} />
             <NavItem tab={Tab.TUTOR} label="Study Vault" icon={GraduationCap} />
@@ -115,7 +115,7 @@ const App: React.FC = () => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-2 shadow-lg absolute w-full left-0">
             <NavItem tab={Tab.HOME} label="Dashboard" icon={House} />
-            <NavItem tab={Tab.NEURON} label="Neuron Model" icon={Activity} />
+            <NavItem tab={Tab.NEURON} label="Neuron Lab" icon={Activity} />
             <NavItem tab={Tab.ELECTRO} label="Electrophysiology" icon={Zap} />
             <NavItem tab={Tab.ANATOMY} label="Neuroanatomy" icon={Brain} />
             <NavItem tab={Tab.TUTOR} label="Study Vault" icon={GraduationCap} />
