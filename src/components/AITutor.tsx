@@ -1,0 +1,238 @@
+import React, { useState } from 'react';
+import { Bot, BookOpen, CheckCircle, XCircle, HelpCircle, GraduationCap, X } from 'lucide-react';
+
+const renderMarkdown = (text: string) => {
+  const lines = text.split('\n');
+  return lines.map((line, i) => {
+    const parts = line.split(/(\*\*[^*]+\*\*)/);
+    return (
+      <p key={i} className={line === '' ? 'mt-2' : ''}>
+        {parts.map((part, j) =>
+          part.startsWith('**') && part.endsWith('**')
+            ? <strong key={j} className="text-zinc-100">{part.slice(2, -2)}</strong>
+            : part
+        )}
+      </p>
+    );
+  });
+};
+
+export default function AITutor() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeMode, setActiveMode] = useState<'quiz' | 'explain'>('quiz');
+
+  // Quiz State
+  const [topic, setTopic] = useState('');
+  const [quizData, setQuizData] = useState<any | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Explain State
+  const [concept, setConcept] = useState('');
+  const [explanation, setExplanation] = useState('');
+
+  const handleGenerateQuiz = async () => {
+    if (!topic.trim()) return;
+    setLoading(true);
+    setError('');
+    setQuizData(null);
+    setSelectedOption(null);
+
+    const sys = "You are an expert neurobiology professor. Generate a multiple choice question about the given topic. Output strictly a JSON object with this format: { \"question\": \"...\", \"options\": [\"...\", \"...\", \"...\", \"...\"], \"correctAnswer\": 0, \"explanation\": \"...\" }. Do NOT include markdown code blocks around the JSON.";
+    
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: topic, systemInstruction: sys }),
+      });
+      const data = await res.json();
+      const result = data.response ? data.response.replace(/```json/gi, '').replace(/```/g, '').trim() : '';
+      
+      const parsed = JSON.parse(result);
+      if (parsed.question) {
+        setQuizData(parsed);
+      } else {
+        setError(parsed.error || 'Failed to generate a valid question. Please try again.');
+      }
+    } catch (e) {
+      setError('AI response malformed. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  const handleExplain = async () => {
+    if (!concept.trim()) return;
+    setLoading(true);
+    setExplanation('');
+    const sys = "You are an expert neurobiology professor. Provide a highly educational, clear, and easy to understand explanation of the given concept. Use bullet points and bold text where appropriate. Keep it concise.";
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: `Explain the concept: ${concept}`, systemInstruction: sys }),
+      });
+      const data = await res.json();
+      setExplanation(data.response || 'Failed to generate explanation.');
+    } catch (e) {
+      setExplanation('Failed to generate explanation.');
+    }
+    setLoading(false);
+  };
+
+  if (!isOpen) {
+    return (
+      <button 
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 p-4 glass-button rounded-full text-violet-400 z-50 shadow-2xl border-none hover:scale-105 transition-transform"
+      >
+        <Bot size={32} />
+      </button>
+    );
+  }
+
+  return (
+    <div className="fixed bottom-6 right-6 w-[800px] max-w-[90vw] h-[600px] max-h-[85vh] glass-panel rounded-2xl z-50 flex flex-col overflow-hidden shadow-2xl border-none">
+      {/* Header */}
+      <div className="flex justify-between items-center p-4 border-b border-white/5 bg-black/20">
+         <div className="flex items-center gap-2">
+           <Bot size={24} className="text-violet-400" />
+           <span className="font-bold text-zinc-50 text-lg">AI Tutor Vault</span>
+         </div>
+         <button onClick={() => setIsOpen(false)} className="text-zinc-400 hover:text-zinc-100 transition-colors">
+           <X size={24} />
+         </button>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <div className="w-64 flex-shrink-0 border-r border-white/5 p-4 space-y-3 bg-black/10">
+          <button
+            onClick={() => { setActiveMode('quiz'); setError(''); setQuizData(null); }}
+            className={`w-full text-left p-3 rounded-lg transition-all ${
+              activeMode === 'quiz' ? 'glass-button bg-violet-500/20 border-violet-500/50' : 'glass-button border-none'
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <HelpCircle size={16} className="text-violet-400" />
+              <p className="text-sm font-semibold text-zinc-100">Exam Generator</p>
+            </div>
+            <p className="text-xs text-zinc-400">Generate multiple choice questions on any topic.</p>
+          </button>
+          
+          <button
+            onClick={() => { setActiveMode('explain'); setError(''); setExplanation(''); }}
+            className={`w-full text-left p-3 rounded-lg transition-all ${
+              activeMode === 'explain' ? 'glass-button bg-blue-500/20 border-blue-500/50' : 'glass-button border-none'
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <BookOpen size={16} className="text-blue-400" />
+              <p className="text-sm font-semibold text-zinc-100">Concept Explainer</p>
+            </div>
+            <p className="text-xs text-zinc-400">Get simplified explanations for complex mechanisms.</p>
+          </button>
+        </div>
+
+        {/* Main Panel */}
+        <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+          {activeMode === 'quiz' ? (
+            <div>
+              <h2 className="text-xl font-bold text-zinc-50 mb-4 flex items-center gap-2">
+                <GraduationCap size={22} className="text-violet-400" />
+                Exam Prep
+              </h2>
+              <div className="flex gap-3 mb-6">
+                <input
+                  type="text"
+                  value={topic}
+                  onChange={e => setTopic(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleGenerateQuiz()}
+                  placeholder="Enter topic (e.g. 'Synaptic Transmission')"
+                  className="flex-1 px-4 py-2 glass-button text-zinc-100 rounded-lg outline-none focus:border-violet-500/50"
+                />
+                <button
+                  onClick={handleGenerateQuiz}
+                  disabled={loading}
+                  className="px-5 py-2 glass-button text-violet-300 rounded-lg disabled:opacity-50 font-medium"
+                >
+                  {loading ? 'Generating...' : 'Create Question'}
+                </button>
+              </div>
+
+              {error && (
+                <div className="p-4 glass-card bg-rose-500/20 border-rose-500/50 rounded-lg text-rose-200 text-sm mb-4">
+                  {error}
+                </div>
+              )}
+
+              {quizData && (
+                <div className="space-y-4 fade-in">
+                  <p className="text-zinc-50 font-medium text-base">{quizData.question}</p>
+                  <div className="space-y-2">
+                    {quizData.options.map((opt: string, i: number) => {
+                      const isSelected = selectedOption === i;
+                      const isCorrect = i === quizData.correctAnswer;
+                      const showResult = selectedOption !== null;
+                      let cls = 'w-full text-left p-3 rounded-lg transition-all text-sm ';
+                      if (showResult) {
+                        if (isCorrect) cls += 'glass-button bg-emerald-500/20 text-emerald-300';
+                        else if (isSelected) cls += 'glass-button bg-rose-500/20 text-rose-300';
+                        else cls += 'glass-button opacity-50 text-zinc-400';
+                      } else {
+                        cls += 'glass-button text-zinc-300';
+                      }
+                      return (
+                        <button key={i} onClick={() => setSelectedOption(i)} disabled={showResult} className={cls}>
+                          <span className="font-medium mr-2">{String.fromCharCode(65 + i)}.</span>{opt}
+                          {showResult && isCorrect && <CheckCircle size={16} className="inline ml-2 text-emerald-400" />}
+                          {showResult && isSelected && !isCorrect && <XCircle size={16} className="inline ml-2 text-rose-400" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {selectedOption !== null && (
+                    <div className="p-4 glass-card bg-violet-500/10 border-violet-500/30 rounded-lg fade-in">
+                      <p className="text-sm font-semibold text-violet-300 mb-1">Explanation</p>
+                      <p className="text-sm text-zinc-300">{quizData.explanation}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <h2 className="text-xl font-bold text-zinc-50 mb-4 flex items-center gap-2">
+                <BookOpen size={22} className="text-blue-400" />
+                Concept Explainer
+              </h2>
+              <div className="flex gap-3 mb-6">
+                <input
+                  type="text"
+                  value={concept}
+                  onChange={e => setConcept(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleExplain()}
+                  placeholder="Enter a concept (e.g. 'Action Potential')"
+                  className="flex-1 px-4 py-2 glass-button text-zinc-100 rounded-lg outline-none focus:border-blue-500/50"
+                />
+                <button
+                  onClick={handleExplain}
+                  disabled={loading}
+                  className="px-5 py-2 glass-button text-blue-300 rounded-lg disabled:opacity-50 font-medium"
+                >
+                  {loading ? 'Explaining...' : 'Explain'}
+                </button>
+              </div>
+              {explanation && (
+                <div className="p-5 glass-card bg-blue-500/10 border-blue-500/30 rounded-lg fade-in">
+                  <div className="text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">{renderMarkdown(explanation)}</div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
