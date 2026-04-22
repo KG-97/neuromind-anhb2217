@@ -85,7 +85,8 @@ export default function AITutor() {
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 p-4 glass-button rounded-full text-violet-400 z-50 shadow-2xl border-none hover:scale-105 transition-transform"
+        aria-label="AI Tutor"
+        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 p-4 glass-button rounded-full text-violet-400 z-[100] shadow-2xl border-none hover:scale-105 transition-transform flex items-center justify-center"
       >
         <Bot size={32} />
       </button>
@@ -93,7 +94,7 @@ export default function AITutor() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-[800px] max-w-[90vw] h-[600px] max-h-[85vh] glass-panel rounded-2xl z-50 flex flex-col overflow-hidden shadow-2xl border-none">
+    <div className="fixed md:bottom-6 md:right-6 bottom-0 right-0 w-full md:w-[800px] max-w-[100vw] h-[85vh] md:h-[600px] glass-panel rounded-t-2xl md:rounded-2xl z-[100] flex flex-col overflow-hidden shadow-2xl border-none transition-all duration-300">
       {/* Header */}
       <div className="flex justify-between items-center p-4 border-b border-white/5 bg-black/20">
          <div className="flex items-center gap-2">
@@ -105,12 +106,12 @@ export default function AITutor() {
          </button>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className="w-64 flex-shrink-0 border-r border-white/5 p-4 space-y-3 bg-black/10">
+        <div className="w-full md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-white/5 p-4 md:space-y-3 flex md:flex-col gap-2 overflow-x-auto custom-scrollbar bg-black/10">
           <button
             onClick={() => { setActiveMode('quiz'); setError(''); setQuizData(null); }}
-            className={`w-full text-left p-3 rounded-lg transition-all ${
+            className={`flex-1 md:w-full text-left p-3 rounded-lg transition-all min-w-[140px] ${
               activeMode === 'quiz' ? 'glass-button bg-violet-500/20 border-violet-500/50' : 'glass-button border-none'
             }`}
           >
@@ -118,12 +119,12 @@ export default function AITutor() {
               <HelpCircle size={16} className="text-violet-400" />
               <p className="text-sm font-semibold text-zinc-100">Exam Generator</p>
             </div>
-            <p className="text-xs text-zinc-400">Generate multiple choice questions on any topic.</p>
+            <p className="text-xs text-zinc-400 hidden md:block">Generate multiple choice questions on any topic.</p>
           </button>
           
           <button
             onClick={() => { setActiveMode('explain'); setError(''); setExplanation(''); }}
-            className={`w-full text-left p-3 rounded-lg transition-all ${
+            className={`flex-1 md:w-full text-left p-3 rounded-lg transition-all min-w-[140px] ${
               activeMode === 'explain' ? 'glass-button bg-blue-500/20 border-blue-500/50' : 'glass-button border-none'
             }`}
           >
@@ -131,7 +132,7 @@ export default function AITutor() {
               <BookOpen size={16} className="text-blue-400" />
               <p className="text-sm font-semibold text-zinc-100">Concept Explainer</p>
             </div>
-            <p className="text-xs text-zinc-400">Get simplified explanations for complex mechanisms.</p>
+            <p className="text-xs text-zinc-400 hidden md:block">Get simplified explanations for complex mechanisms.</p>
           </button>
         </div>
 

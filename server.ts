@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from "express";
 import { generateContent, generateImage } from "./src/services/geminiService.ts";
 import { createServer as createViteServer } from "vite";
