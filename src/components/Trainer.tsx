@@ -131,6 +131,24 @@ const decks: Deck[] = [
       { term: 'Basilar Artery', match: 'Pons, superior cerebellum, midbrain' },
     ],
   },
+  {
+    key: 'basal-ganglia',
+    label: 'Basal Ganglia & IC',
+    emoji: '🧬',
+    leftHeader: 'Structure',
+    rightHeader: 'Key Feature',
+    pairs: [
+      { term: 'Caudate Nucleus', match: 'C-shaped, head is lateral to lateral ventricle' },
+      { term: 'Putamen', match: 'Lateral portion of lentiform nucleus' },
+      { term: 'Globus Pallidus (GPi)', match: 'Major inhibitory output to the thalamus' },
+      { term: 'Subthalamic Nucleus', match: 'Part of indirect pathway, target for DBS' },
+      { term: 'SNc (Substantia Nigra)', match: 'Source of dopamine for the striatum' },
+      { term: 'Internal Capsule (Genu)', match: 'Contains corticobulbar fibers' },
+      { term: 'Internal Capsule (Post. Limb)', match: 'Contains corticospinal and sensory fibers' },
+      { term: 'Hippocampus', match: 'Memory consolidation (Limbic system)' },
+      { term: 'Amygdala', match: 'Fear and emotional processing' },
+    ],
+  },
 ];
 
 function shuffle<T>(arr: T[]): T[] {
