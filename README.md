@@ -1,20 +1,55 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🧠 ANHB2217 Neurobiology Master Atlas
 
-# Run and deploy your AI Studio app
+A premium, interactive neurobiology study platform designed for high-yield anatomical review and AI-assisted learning. This atlas integrates structural diagrams, clinical cases, and real-time tutoring using Google Gemini.
 
-This contains everything you need to run your app locally.
+## 🚀 Key Features
+- **9 Specialized Modules:** Coverage from basic Neuron physiology to complex Subcortical systems.
+- **AI-Powered Diagrams:** Generate custom textbook-quality SVGs with interactive "hover-to-learn" functionality.
+- **Global Search:** Instant navigation via `Command+K` (or `Ctrl+K`) search bar.
+- **Labelling Trainer:** Gamified matching games for cranial nerves, tracts, and blood supply.
+- **AI Tutor:** Context-aware assistant for clinical vignettes, mnemonics, and exam prep.
+- **Premium UI:** Glassmorphic dark-mode design with mobile-responsive navigation.
 
-View your app in AI Studio: https://ai.studio/apps/1984ad81-07d3-46ad-aba2-22b03831c401
+## 🛠️ Tech Stack
+- **Frontend:** React + TypeScript + Tailwind CSS + Framer Motion
+- **Backend:** Express (Production-ready proxy)
+- **AI Core:** Google Gemini 3.1 Pro (Text/Reasoning) & Flash (Image Generation)
 
-## Run Locally
+## 💻 Local Development
 
-**Prerequisites:**  Node.js
+1. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
 
+2. **Environment Setup:**
+   Create a `.env` file in the root directory:
+   ```env
+   GEMINI_API_KEY=your_api_key_here
+   ```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+3. **Run Development Server:**
+   ```bash
+   npm run dev
+   ```
+
+## 🌐 Production Deployment
+
+This project is configured for seamless deployment to **Render**, **Vercel**, or any Node.js environment.
+
+### Deployment Steps:
+1. **Build the Application:**
+   ```bash
+   npm run build
+   ```
+2. **Start Production Server:**
+   ```bash
+   NODE_ENV=production npx tsx server.ts
+   ```
+
+### Render Deployment:
+The included `render.yaml` automates the setup. Simply connect your Git repository to Render, and it will handle the build and start commands automatically. **Important:** Remember to add your `GEMINI_API_KEY` to the Environment Variables in the Render dashboard.
+
+---
+
+*Designed for ANHB2217 students to master neuroanatomy with clarity and speed.*
