@@ -1,0 +1,24 @@
+{
+  "name": "NeuroMind ANHB2217",
+  "short_name": "NeuroMind",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "description": "ANHB2217 neuroscience study companion with interactive labs, workbook support, and AI tutoring.",
+  "icons": [
+    {
+      "src": "icons/neuromind-icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/neuromind-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

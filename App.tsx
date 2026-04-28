@@ -2,10 +2,53 @@ import React, { useMemo, useState } from 'react';
 import { Brain, Menu, X } from 'lucide-react';
 import { AtlasRoute } from './types';
 import { atlasDefaultRoute, atlasRouteRegistry } from './app/atlasRoutes';
+import React, { useEffect, useState } from 'react';
+import { Activity, Zap, Brain, GraduationCap, Menu, X, House, Download } from 'lucide-react';
+import { Tab } from './types';
+import StudyHub from './components/StudyHub';
+import NeuronLab from './components/NeuronLab';
+import ActionPotentialLab from './components/ActionPotentialLab';
+import BrainAtlas from './components/BrainAtlas';
+import AITutor from './components/AITutor';
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+}
 
 const App: React.FC = () => {
   const [activeRoute, setActiveRoute] = useState<AtlasRoute>(atlasDefaultRoute);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const onBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event as BeforeInstallPromptEvent);
+    };
+
+    const onAppInstalled = () => {
+      setInstallPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+    window.addEventListener('appinstalled', onAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', onAppInstalled);
+    };
+  }, []);
+
+  const handleInstall = async () => {
+    if (!installPrompt) {
+      return;
+    }
+
+    await installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  };
 
   const routeById = useMemo(
     () => Object.fromEntries(atlasRouteRegistry.map(route => [route.route, route])),
