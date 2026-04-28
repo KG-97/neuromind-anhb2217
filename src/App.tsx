@@ -18,9 +18,9 @@ import Subcortical from './components/Subcortical';
 import AITutor from './components/AITutor';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+    const [activeTab, setActiveTab] = useState<string>(() => localStorage.getItem('nm_activeTab') || 'dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [deepLinkId, setDeepLinkId] = useState<any>(null);
+    const [deepLinkId, setDeepLinkId] = useState<string | number | null>(null);
 
   const navItems = [
     { id: 'dashboard', name: 'Dashboard Overview', icon: '🏠' },
@@ -63,10 +63,16 @@ export default function App() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchHighlightIdx, setSearchHighlightIdx] = useState<number>(-1);
 
   const filteredSearch = searchTerms.filter(t => 
     t.term.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Persist active tab across sessions
+  useEffect(() => {
+    localStorage.setItem('nm_activeTab', activeTab);
+  }, [activeTab]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -75,10 +81,33 @@ export default function App() {
         setIsSearchOpen(true);
       }
       if (e.key === 'Escape') setIsSearchOpen(false);
+      if (isSearchOpen) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setSearchHighlightIdx(i => Math.min(i + 1, filteredSearch.length - 1));
+        }
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setSearchHighlightIdx(i => Math.max(i - 1, 0));
+        }
+        if (e.key === 'Enter' && searchHighlightIdx >= 0 && filteredSearch[searchHighlightIdx]) {
+          const item = filteredSearch[searchHighlightIdx];
+          setActiveTab(item.tab);
+          setDeepLinkId(item.id ?? null);
+          setIsSearchOpen(false);
+          setSearchQuery('');
+          setSearchHighlightIdx(-1);
+        }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    }, [isSearchOpen, filteredSearch, searchHighlightIdx]);
+
+  useEffect(() => {
+    setSearchHighlightIdx(-1);
+  }, [searchQuery]);
+  }, [searchQuery]);
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-zinc-950 text-zinc-100 overflow-hidden relative font-sans selection:bg-violet-500/30">
