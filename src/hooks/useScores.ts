@@ -10,7 +10,12 @@ export type QuizKey =
   | 'brainstem-syndromes'
   | 'sense-pathways'
   | 'cortical-surface'
-  | 'dura-blood';
+  | 'dura-blood'
+  | 'basal-ganglia'
+  | 'cortex-functional-areas'
+  | 'thalamic-nuclei'
+  | 'cerebellar-pathways'
+  | 'cerebellum-anatomy';
 
 export type QuizScore = {
   best: number;    // best percent 0-100

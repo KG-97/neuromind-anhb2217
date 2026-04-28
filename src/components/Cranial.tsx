@@ -16,9 +16,15 @@ const cns = {
   12: { r: 'XII', n: 'Hypoglossal', t: 'Motor', f: 'Tongue movement', l: 'Medulla', col: 'rose' }
 };
 
-export default function Cranial() {
+export default function Cranial({ initialId }: { initialId?: number }) {
   const [currentCNId, setCurrentCNId] = useState<keyof typeof cns>(1);
   const [aiResponse, setAiResponse] = useState('');
+  
+  useEffect(() => {
+    if (initialId && cns[initialId as keyof typeof cns]) {
+      setCurrentCNId(initialId as keyof typeof cns);
+    }
+  }, [initialId]);
   const [loading, setLoading] = useState(false);
   const [diagramSvg, setDiagramSvg] = useState('');
   const [imageLoading, setImageLoading] = useState(false);

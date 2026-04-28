@@ -10,14 +10,14 @@ if (!apiKey) {
 const ai = new GoogleGenAI({ apiKey });
 
 export async function generateContent(prompt: string, systemInstruction: string) {
+  if (apiKey.includes('dummy')) {
+    throw new Error("Gemini API Key is not configured. Please add a valid key to your .env file.");
+  }
   const response = await ai.models.generateContent({
-    model: "gemini-3.1-pro-preview",
+    model: "gemini-1.5-pro",
     contents: prompt,
     config: {
       systemInstruction: systemInstruction,
-      thinkingConfig: {
-        thinkingLevel: ThinkingLevel.HIGH,
-      },
     },
   });
 
@@ -29,8 +29,11 @@ export async function generateContent(prompt: string, systemInstruction: string)
 }
 
 export async function generateImage(prompt: string) {
+  if (apiKey.includes('dummy')) {
+    throw new Error("Gemini API Key is not configured.");
+  }
   const response = await ai.models.generateContent({
-    model: "gemini-3.1-flash-image-preview",
+    model: "gemini-1.5-flash",
     contents: {
       parts: [
         {

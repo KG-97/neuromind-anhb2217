@@ -45,8 +45,14 @@ const subcortical = {
   }
 };
 
-export default function Subcortical() {
+export default function Subcortical({ initialId }: { initialId?: string }) {
   const [currentId, setCurrentId] = useState<keyof typeof subcortical>('basal-ganglia');
+
+  useEffect(() => {
+    if (initialId && subcortical[initialId as keyof typeof subcortical]) {
+      setCurrentId(initialId as keyof typeof subcortical);
+    }
+  }, [initialId]);
   const [aiResponse, setAiResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [diagramSvg, setDiagramSvg] = useState('');

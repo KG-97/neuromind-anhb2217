@@ -20,6 +20,7 @@ import AITutor from './components/AITutor';
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [deepLinkId, setDeepLinkId] = useState<any>(null);
 
   const navItems = [
     { id: 'dashboard', name: 'Dashboard Overview', icon: '🏠' },
@@ -39,22 +40,25 @@ export default function App() {
     { term: 'Pia Mater', tab: 'cortex' },
     { term: 'CSF Flow', tab: 'cortex' },
     { term: 'Brodmann', tab: 'cortex' },
-    { term: 'Basal Ganglia', tab: 'subcortical' },
-    { term: 'Internal Capsule', tab: 'subcortical' },
-    { term: 'Cerebellum', tab: 'subcortical' },
-    { term: 'Hippocampus', tab: 'subcortical' },
-    { term: 'Direct Pathway', tab: 'subcortical' },
+    { term: 'Basal Ganglia', tab: 'subcortical', id: 'basal-ganglia' },
+    { term: 'Internal Capsule', tab: 'subcortical', id: 'internal-capsule' },
+    { term: 'Cerebellum', tab: 'subcortical', id: 'cerebellum' },
+    { term: 'Hippocampus', tab: 'subcortical', id: 'limbic' },
+    { term: 'Direct Pathway', tab: 'subcortical', id: 'basal-ganglia' },
     { term: 'DCML', tab: 'spinal' },
     { term: 'Spinothalamic', tab: 'spinal' },
     { term: 'Corticospinal', tab: 'spinal' },
-    { term: 'Olfactory', tab: 'cranial' },
-    { term: 'Optic', tab: 'cranial' },
-    { term: 'Vagus', tab: 'cranial' },
+    { term: 'Olfactory', tab: 'cranial', id: 1 },
+    { term: 'Optic', tab: 'cranial', id: 2 },
+    { term: 'Vagus', tab: 'cranial', id: 10 },
     { term: 'Wallenberg', tab: 'brainstem' },
     { term: 'Weber', tab: 'brainstem' },
     { term: 'Vision', tab: 'senses' },
     { term: 'Audition', tab: 'senses' },
     { term: 'Action Potential', tab: 'neuron' },
+    { term: 'Cortex Quiz', tab: 'trainer' },
+    { term: 'Thalamus Quiz', tab: 'trainer' },
+    { term: 'Cerebellum Quiz', tab: 'trainer' },
   ];
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -112,7 +116,12 @@ export default function App() {
                 {filteredSearch.length > 0 ? filteredSearch.map((item, i) => (
                   <button 
                     key={i}
-                    onClick={() => { setActiveTab(item.tab); setIsSearchOpen(false); setSearchQuery(''); }}
+                    onClick={() => { 
+                      setActiveTab(item.tab); 
+                      setDeepLinkId(item.id || null);
+                      setIsSearchOpen(false); 
+                      setSearchQuery(''); 
+                    }}
                     className="w-full text-left p-4 hover:bg-white/5 rounded-2xl flex items-center justify-between group transition-colors"
                   >
                     <span className="text-zinc-200 font-medium group-hover:text-violet-300 transition-colors">{item.term}</span>
@@ -176,7 +185,7 @@ export default function App() {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); }}
+              onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); setDeepLinkId(null); }}
               className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all duration-300 relative group flex w-full items-center ${
                 activeTab === item.id ? 'text-white font-semibold shadow-lg' : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
               }`}
@@ -208,9 +217,9 @@ export default function App() {
           >
             {activeTab === 'dashboard' && <Dashboard />}
             {activeTab === 'cortex' && <Cortex />}
-            { activeTab === 'subcortical' && <Subcortical /> }
+            { activeTab === 'subcortical' && <Subcortical initialId={deepLinkId} /> }
             { activeTab === 'spinal' && <Spinal /> }
-            { activeTab === 'cranial' && <Cranial /> }
+            { activeTab === 'cranial' && <Cranial initialId={deepLinkId} /> }
             { activeTab === 'brainstem' && <Brainstem /> }
             { activeTab === 'senses' && <Senses /> }
             { activeTab === 'trainer' && <Trainer /> }
