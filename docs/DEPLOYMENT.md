@@ -58,10 +58,10 @@ After deployment, verify:
 
 ## Release gate (latest reassessment)
 
-Latest formal readiness check: **April 12, 2026**.
+Latest formal readiness check: **April 22, 2026**.
 
 - Status: **Ready to deploy** (typecheck/build/workbook artifact checks passed)
-- Detailed report: [`docs/RELEASE_REASSESSMENT_2026-04-12.md`](./RELEASE_REASSESSMENT_2026-04-12.md)
+- Detailed report: [`docs/RELEASE_REASSESSMENT_2026-04-22.md`](./RELEASE_REASSESSMENT_2026-04-22.md)
 
 If this date gets stale, re-run:
 
