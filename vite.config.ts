@@ -6,6 +6,12 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
+  const isProd = mode === 'production';
+
+  if (isProd && !env.GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY missing in production env');
+  }
+
   return {
     plugins: [react(), tailwindcss(), viteSingleFile()],
     define: {
@@ -16,9 +22,12 @@ export default defineConfig(({mode}) => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      sourcemap: !isProd,
+      cssCodeSplit: false,
+      minify: 'esbuild',
+    },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
     },
   };
