@@ -1,54 +1,85 @@
-import { GoogleGenAI, ThinkingLevel } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
-let apiKey = process.env.GEMINI_API_KEY || "";
+// ── Central model constants ──────────────────────────────────────────────────
+const MODELS = {
+  text: 'gemini-1.5-pro',
+  image: 'gemini-1.5-flash',
+} as const;
+
+const TIMEOUT_MS = 25000;
+
+// ── Typed error class ────────────────────────────────────────────────────────
+export class AIError extends Error {
+  code: 'NO_KEY' | 'RATE_LIMIT' | 'TIMEOUT' | 'UNKNOWN';
+  constructor(code: AIError['code'], message: string) {
+    super(message);
+    this.name = 'AIError';
+    this.code = code;
+  }
+}
+
+// ── API key setup ────────────────────────────────────────────────────────────
+let apiKey = process.env.GEMINI_API_KEY || '';
 apiKey = apiKey.replace(/[\n\r"' ]+/g, '');
 
 if (!apiKey) {
-  throw new Error("GEMINI_API_KEY environment variable is required");
+  throw new AIError('NO_KEY', 'GEMINI_API_KEY environment variable is required');
 }
 
 const ai = new GoogleGenAI({ apiKey });
 
-export async function generateContent(prompt: string, systemInstruction: string) {
-  if (apiKey.includes('dummy')) {
-    throw new Error("Gemini API Key is not configured. Please add a valid key to your .env file.");
-  }
-  const response = await ai.models.generateContent({
-    model: "gemini-1.5-pro",
-    contents: prompt,
-    config: {
-      systemInstruction: systemInstruction,
-    },
-  });
-
-  if (!response.text) {
-      throw new Error("No text returned from Gemini");
-  }
-
-  return response.text;
+// ── Helper: wrap promise with timeout ───────────────────────────────────────
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new AIError('TIMEOUT', `Gemini request timed out after ${ms}ms`)), ms)
+    ),
+  ]);
 }
 
-export async function generateImage(prompt: string) {
+// ── Public API ───────────────────────────────────────────────────────────────
+export async function generateContent(prompt: string, systemInstruction: string): Promise<string> {
   if (apiKey.includes('dummy')) {
-    throw new Error("Gemini API Key is not configured.");
+    throw new AIError('NO_KEY', 'Gemini API Key is not configured. Please add a valid key to your .env file.');
   }
-  const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
-    contents: {
-      parts: [
-        {
-          text: prompt,
-        },
-      ],
-    },
-    config: {
-      imageConfig: {
-        aspectRatio: "16:9",
-        imageSize: "1K"
-      }
+  try {
+    const response = await withTimeout(
+      ai.models.generateContent({
+        model: MODELS.text,
+        contents: prompt,
+        config: { systemInstruction },
+      }),
+      TIMEOUT_MS
+    );
+    if (!response.text) {
+      throw new AIError('UNKNOWN', 'No text returned from Gemini');
     }
-  });
+    return response.text;
+  } catch (err) {
+    if (err instanceof AIError) throw err;
+    const msg = (err as Error)?.message || String(err);
+    if (msg.includes('429') || msg.toLowerCase().includes('quota')) {
+      throw new AIError('RATE_LIMIT', 'Gemini rate limit hit. Please wait a moment and try again.');
+    }
+    throw new AIError('UNKNOWN', msg);
+  }
+}
 
+export async function generateImage(prompt: string): Promise<string | null> {
+  if (apiKey.includes('dummy')) {
+    throw new AIError('NO_KEY', 'Gemini API Key is not configured.');
+  }
+  const response = await withTimeout(
+    ai.models.generateContent({
+      model: MODELS.image,
+      contents: { parts: [{ text: prompt }] },
+      config: {
+        imageConfig: { aspectRatio: '16:9', imageSize: '1K' },
+      },
+    }),
+    TIMEOUT_MS
+  );
   if (response.candidates?.[0]?.content?.parts) {
     for (const part of response.candidates[0].content.parts) {
       if (part.inlineData) {
@@ -59,14 +90,13 @@ export async function generateImage(prompt: string) {
   return null;
 }
 
-export async function generateQuizQuestion(topic: string) {
-  const sys = "You are an expert neurobiology professor. Generate a multiple choice question about the given topic. Output strictly a JSON object with this format: { \"question\": \"...\", \"options\": [\"...\", \"...\", \"...\", \"...\"], \"correctAnswer\": 0, \"explanation\": \"...\" }. Do NOT include markdown code blocks around the JSON.";
+export async function generateQuizQuestion(topic: string): Promise<string> {
+  const sys = 'You are an expert neurobiology professor. Generate a multiple choice question about the given topic. Output strictly a JSON object with this format: { "question": "...", "options": ["...", "...", "...", "..."], "correctAnswer": 0, "explanation": "..." }. Do NOT include markdown code blocks around the JSON.';
   const res = await generateContent(topic, sys);
   return res.replace(/```json/gi, '').replace(/```/g, '').trim();
 }
 
-export async function explainConcept(concept: string) {
-  const sys = "You are an expert neurobiology professor. Provide a highly educational, clear, and easy to understand explanation of the given concept. Use bullet points and bold text where appropriate. Keep it concise.";
-  const res = await generateContent(`Explain the concept: ${concept}`, sys);
-  return res;
+export async function explainConcept(concept: string): Promise<string> {
+  const sys = 'You are an expert neurobiology professor. Provide a highly educational, clear, and easy to understand explanation of the given concept. Use bullet points and bold text where appropriate. Keep it concise.';
+  return generateContent(`Explain the concept: ${concept}`, sys);
 }
