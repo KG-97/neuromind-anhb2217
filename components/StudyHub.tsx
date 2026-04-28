@@ -129,6 +129,7 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
 
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {[
+          { title: 'Neuron Model', description: 'Review structures and function.', tab: Tab.NEURON_LAB, icon: Activity },
           { title: 'Neuron Lab', description: 'Run the combined neuron structure + electrophysiology flow.', tab: Tab.NEURON, icon: Activity },
           { title: 'Electrophysiology Lab', description: 'Replay the action potential sequence.', tab: Tab.ELECTRO, icon: Zap },
           { title: 'Brain Atlas', description: 'Revise anatomy and clinical correlates.', tab: Tab.ANATOMY, icon: Brain },
