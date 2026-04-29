@@ -5,8 +5,6 @@ import { useScores } from '../hooks/useScores';
 export default function Dashboard() {
   const [imagePrompt, setImagePrompt] = useState('');
   const [generatedImage, setGeneratedImage] = useState('');
-  const [imagePrompt, setImagePrompt] = useState('');
-  const [generatedImage, setGeneratedImage] = useState('');
   const [imageLoading, setImageLoading] = useState(false);
   const { scores } = useScores();
 
@@ -14,6 +12,8 @@ export default function Dashboard() {
   const masteredDecks = useMemo(() => {
     return Object.values(scores).filter(s => s && s.best >= 80).length;
   }, [scores]);
+
+  const handleGenerateImage = async () => {
     if (!imagePrompt.trim()) return;
     setImageLoading(true);
     setGeneratedImage('');
