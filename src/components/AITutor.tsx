@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bot, BookOpen, CheckCircle, XCircle, HelpCircle, GraduationCap, X } from 'lucide-react';
 
 const renderMarkdown = (text: string) => {
@@ -32,6 +32,39 @@ export default function AITutor() {
   const [concept, setConcept] = useState('');
   const [explanation, setExplanation] = useState('');
 
+  useEffect(() => {
+    const handleExplainEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ concept: string }>;
+      if (customEvent.detail?.concept) {
+        setIsOpen(true);
+        setActiveMode('explain');
+        setConcept(customEvent.detail.concept);
+        // We defer the fetch slightly to ensure state is set, but we can just call it with the concept directly
+        triggerExplain(customEvent.detail.concept);
+      }
+    };
+    window.addEventListener('aitutor:explain', handleExplainEvent);
+    return () => window.removeEventListener('aitutor:explain', handleExplainEvent);
+  }, []);
+
+  const triggerExplain = async (queryToExplain: string) => {
+    setLoading(true);
+    setExplanation('');
+    const sys = "You are an expert neurobiology professor. Provide a highly educational, clear, and easy to understand explanation of the given concept. Use bullet points and bold text where appropriate. Keep it concise.";
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: `Explain why this is incorrect or clarify the concept: ${queryToExplain}`, systemInstruction: sys }),
+      });
+      const data = await res.json();
+      setExplanation(data.response || 'Failed to generate explanation.');
+    } catch (e) {
+      setExplanation('Failed to generate explanation.');
+    }
+    setLoading(false);
+  };
+
   const handleGenerateQuiz = async () => {
     if (!topic.trim()) return;
     setLoading(true);
@@ -64,21 +97,7 @@ export default function AITutor() {
 
   const handleExplain = async () => {
     if (!concept.trim()) return;
-    setLoading(true);
-    setExplanation('');
-    const sys = "You are an expert neurobiology professor. Provide a highly educational, clear, and easy to understand explanation of the given concept. Use bullet points and bold text where appropriate. Keep it concise.";
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: `Explain the concept: ${concept}`, systemInstruction: sys }),
-      });
-      const data = await res.json();
-      setExplanation(data.response || 'Failed to generate explanation.');
-    } catch (e) {
-      setExplanation('Failed to generate explanation.');
-    }
-    setLoading(false);
+    await triggerExplain(concept);
   };
 
   if (!isOpen) {

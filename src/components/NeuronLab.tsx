@@ -18,7 +18,7 @@ export default function NeuronLab() {
   return (
     <div className="space-y-12 max-w-6xl mx-auto">
       <section>
-        <h2 className="text-3xl font-bold text-zinc-50 mb-4">Lab 5: Neuron Workbook</h2>
+        <h2 className="text-3xl font-bold text-zinc-50 mb-4">Neuron Lab</h2>
         <p className="text-zinc-400 mb-8">
           This combined module walks you through the anatomy of a neuron and the
           basics of electrophysiology. Start by clicking on the parts of the neuron

@@ -31,7 +31,7 @@ export default function App() {
     { id: 'brainstem', name: 'Brainstem & Localisation', icon: '🧭' },
     { id: 'senses', name: 'Special Senses', icon: '👁️' },
     { id: 'trainer', name: 'Labelling Trainer', icon: '🎯' },
-    { id: 'neuron', name: 'Lab 5: Neuron Workbook', icon: '🧠✨' },
+    { id: 'neuron', name: 'Neuron Lab', icon: '🧠✨' },
   ];
 
   const searchTerms = [

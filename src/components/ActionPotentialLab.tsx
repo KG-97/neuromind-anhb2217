@@ -5,13 +5,15 @@ import { Play, RotateCcw, Zap } from 'lucide-react';
 const ActionPotentialLab: React.FC = () => {
   const [data, setData] = useState<{ time: number; mv: number }[]>([]);
   const [isStimulated, setIsStimulated] = useState(false);
-  const [explanation, setExplanation] = useState("Neuron is at Resting Membrane Potential (-70mV). Permeable mainly to K+.");
+  const [explanation, setExplanation] = useState("Neuron is at Resting Membrane Potential. Permeable mainly to K+.");
   
-  // Simulation constants
-  const restingPot = -70;
-  const threshold = -55;
-  const peak = 30;
-  const hyper = -85;
+  // Simulation controls
+  const [restingPot, setRestingPot] = useState(-70);
+  const [threshold, setThreshold] = useState(-55);
+  const [peak, setPeak] = useState(30);
+
+  // Derive hyper from resting
+  const hyper = restingPot - 15;
 
   const generateData = () => {
     const points = [];
@@ -34,6 +36,13 @@ const ActionPotentialLab: React.FC = () => {
   const fullSequence = useRef(generateData());
 
   useEffect(() => {
+    fullSequence.current = generateData();
+    if (!isStimulated) {
+      setData(fullSequence.current.slice(0, 20));
+    }
+  }, [restingPot, threshold, peak]);
+
+  useEffect(() => {
     // Initial state
     setData(fullSequence.current.slice(0, 20));
   }, []);
@@ -47,10 +56,10 @@ const ActionPotentialLab: React.FC = () => {
           setData(fullSequence.current.slice(0, frame));
           
           // Update explanation based on frame
-          if (frame > 20 && frame <= 25) setExplanation("Stimulus applied. Graded potential reaches Threshold (-55mV). Voltage-gated Na+ channels open.");
-          else if (frame > 25 && frame <= 30) setExplanation("Depolarization Phase. Rapid Na+ influx makes the interior positive (+30mV).");
+          if (frame > 20 && frame <= 25) setExplanation(`Stimulus applied. Graded potential reaches Threshold (${threshold}mV). Voltage-gated Na+ channels open.`);
+          else if (frame > 25 && frame <= 30) setExplanation(`Depolarization Phase. Rapid Na+ influx makes the interior positive (${peak}mV).`);
           else if (frame > 30 && frame <= 40) setExplanation("Repolarization Phase. Na+ channels inactivate. Voltage-gated K+ channels open, K+ rushes out.");
-          else if (frame > 40 && frame <= 55) setExplanation("Hyperpolarization. K+ channels remain open, membrane potential dips below resting state (Relative Refractory Period).");
+          else if (frame > 40 && frame <= 55) setExplanation("Hyperpolarization. K+ channels remain open, membrane potential dips below resting state.");
           else if (frame > 55) setExplanation("Return to Resting Potential via Na+/K+ Pump and leak channels.");
         } else {
           clearInterval(interval);
@@ -69,7 +78,7 @@ const ActionPotentialLab: React.FC = () => {
 
   const handleReset = () => {
     setData(fullSequence.current.slice(0, 20));
-    setExplanation("Neuron is at Resting Membrane Potential (-70mV).");
+    setExplanation(`Neuron is at Resting Membrane Potential (${restingPot}mV).`);
     setIsStimulated(false);
   };
 
@@ -107,8 +116,8 @@ const ActionPotentialLab: React.FC = () => {
               <ReferenceLine x={30} label={{ value: 'Peak', position: 'top', fill: '#475569', fontSize: 11 }} stroke="#94a3b8" strokeDasharray="4 4" />
               <ReferenceLine x={40} label={{ value: 'Repolarization', position: 'top', fill: '#475569', fontSize: 11 }} stroke="#94a3b8" strokeDasharray="4 4" />
               <ReferenceLine x={55} label={{ value: 'Hyperpolarization', position: 'top', fill: '#475569', fontSize: 11 }} stroke="#94a3b8" strokeDasharray="4 4" />
-              <ReferenceLine y={-55} label="Threshold" stroke="red" strokeDasharray="3 3" />
-              <ReferenceLine y={-70} label="Resting" stroke="green" strokeDasharray="3 3" />
+              <ReferenceLine y={threshold} label="Threshold" stroke="red" strokeDasharray="3 3" />
+              <ReferenceLine y={restingPot} label="Resting" stroke="green" strokeDasharray="3 3" />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#1e293b', color: '#fff', borderRadius: '8px', border: 'none' }}
                 itemStyle={{ color: '#fff' }}
@@ -129,16 +138,48 @@ const ActionPotentialLab: React.FC = () => {
              </p>
           </div>
 
-          <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Key Parameters</h4>
+          <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Simulation Controls</h4>
+          <div className="space-y-4 mb-6 p-4 glass-card rounded-xl">
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <label className="text-zinc-300">Resting Potential</label>
+                <span className="font-mono text-green-400">{restingPot} mV</span>
+              </div>
+              <input 
+                type="range" min="-90" max="-50" value={restingPot} 
+                onChange={(e) => setRestingPot(Number(e.target.value))}
+                disabled={isStimulated}
+                className="w-full accent-green-500"
+              />
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <label className="text-zinc-300">Threshold</label>
+                <span className="font-mono text-red-400">{threshold} mV</span>
+              </div>
+              <input 
+                type="range" min="-65" max="-30" value={threshold} 
+                onChange={(e) => setThreshold(Number(e.target.value))}
+                disabled={isStimulated}
+                className="w-full accent-red-500"
+              />
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <label className="text-zinc-300">Peak Voltage (Na+ E)</label>
+                <span className="font-mono text-blue-400">{peak} mV</span>
+              </div>
+              <input 
+                type="range" min="10" max="60" value={peak} 
+                onChange={(e) => setPeak(Number(e.target.value))}
+                disabled={isStimulated}
+                className="w-full accent-blue-500"
+              />
+            </div>
+          </div>
+
+          <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Key Drivers</h4>
           <ul className="space-y-3">
-            <li className="flex justify-between items-center text-sm border-b border-slate-800 pb-2">
-              <span className="text-slate-400">Resting Potential</span>
-              <span className="font-mono text-green-400">-70 mV</span>
-            </li>
-            <li className="flex justify-between items-center text-sm border-b border-slate-800 pb-2">
-              <span className="text-slate-400">Threshold</span>
-              <span className="font-mono text-red-400">-55 mV</span>
-            </li>
             <li className="flex justify-between items-center text-sm border-b border-slate-800 pb-2">
               <span className="text-slate-400">Depolarization Driver</span>
               <span className="text-blue-300">Na+ Influx</span>

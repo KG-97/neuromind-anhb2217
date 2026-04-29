@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Bot } from 'lucide-react';
 import { useScores, type QuizKey } from '../hooks/useScores';
 
 type Pair = { term: string; match: string; hint?: string };
@@ -243,6 +244,7 @@ export default function Trainer() {
   const [attempts, setAttempts] = useState(0);
   const [wrongs, setWrongs] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [failedItems, setFailedItems] = useState<Set<number>>(new Set());
 
   const shuffledRight = useMemo(() => shuffle(deck.pairs.map((p, i) => ({ ...p, originalIdx: i }))), [deckIdx, version]);
 
@@ -285,6 +287,7 @@ export default function Trainer() {
       ns[leftIdx] = 'wrong';
       setStatus(ns);
       setWrongs((w) => w + 1);
+      setFailedItems((prev) => new Set(prev).add(leftIdx));
       // clear the "wrong" flash after a moment
       setTimeout(() => {
         setStatus((s) => {
@@ -305,6 +308,7 @@ export default function Trainer() {
     setAttempts(0);
     setWrongs(0);
     setRevealed(false);
+    setFailedItems(new Set());
   };
 
   const accuracy = attempts ? Math.round(((attempts - wrongs) / attempts) * 100) : 100;
@@ -364,22 +368,37 @@ export default function Trainer() {
                 const done = s === 'correct';
                 return (
                   <li key={i}>
-                    <button
-                      onClick={() => handleLeft(i)}
-                      disabled={done}
-                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm transition-colors ${
-                        done
-                          ? 'glass-button bg-emerald-500/20 text-emerald-200'
-                          : s === 'wrong'
-                            ? 'glass-button bg-rose-500/20 text-rose-100 animate-pulse'
-                            : active
-                              ? 'glass-button bg-violet-500/20 text-violet-100'
-                              : 'glass-button text-zinc-200'
-                      }`}
-                    >
-                      <span className="font-medium">{p.term}</span>
-                      {revealed && <span className="block text-xs text-zinc-500 mt-0.5">→ {p.match}</span>}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleLeft(i)}
+                        disabled={done}
+                        className={`flex-1 text-left px-4 py-2.5 rounded-lg text-sm transition-colors ${
+                          done
+                            ? 'glass-button bg-emerald-500/20 text-emerald-200'
+                            : s === 'wrong'
+                              ? 'glass-button bg-rose-500/20 text-rose-100 animate-pulse'
+                              : active
+                                ? 'glass-button bg-violet-500/20 text-violet-100'
+                                : 'glass-button text-zinc-200'
+                        }`}
+                      >
+                        <span className="font-medium">{p.term}</span>
+                        {revealed && <span className="block text-xs text-zinc-500 mt-0.5">→ {p.match}</span>}
+                      </button>
+                      {failedItems.has(i) && !done && (
+                        <button
+                          onClick={() => {
+                            window.dispatchEvent(new CustomEvent('aitutor:explain', { 
+                              detail: { concept: `In the context of ${deck.label}, what is the correct match for "${p.term}" and why?` }
+                            }));
+                          }}
+                          className="p-2.5 rounded-lg glass-button text-violet-400 hover:text-violet-300 transition-colors"
+                          title="Ask AI Tutor"
+                        >
+                          <Bot size={18} />
+                        </button>
+                      )}
+                    </div>
                   </li>
                 );
               })}

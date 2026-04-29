@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
+import { useScores } from '../hooks/useScores';
 
 export default function Dashboard() {
   const [imagePrompt, setImagePrompt] = useState('');
   const [generatedImage, setGeneratedImage] = useState('');
+  const [imagePrompt, setImagePrompt] = useState('');
+  const [generatedImage, setGeneratedImage] = useState('');
   const [imageLoading, setImageLoading] = useState(false);
+  const { scores } = useScores();
 
-  const handleGenerateImage = async () => {
+  const totalDecks = 12; // From Trainer.tsx
+  const masteredDecks = useMemo(() => {
+    return Object.values(scores).filter(s => s && s.best >= 80).length;
+  }, [scores]);
     if (!imagePrompt.trim()) return;
     setImageLoading(true);
     setGeneratedImage('');
@@ -54,16 +61,31 @@ export default function Dashboard() {
       <motion.h2 variants={itemVariants} className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-400 mb-3 tracking-tight">NeuroMind</motion.h2>
       <motion.p variants={itemVariants} className="text-zinc-400 mb-8 text-lg leading-relaxed max-w-3xl">NeuroMind helps ANHB2217 students study faster with workbook-style revision, lesion logic, quick simulations, and AI explanations.</motion.p>
 
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div className="glass-card p-8 rounded-2xl group hover:border-emerald-500/30 transition-colors flex flex-col justify-center">
-          <h3 className="text-xl font-bold text-zinc-100 mb-4 flex items-center"><span className="text-emerald-400 mr-3">🧠</span> Lab 5: Neuron Workbook</h3>
-          <p className="text-sm text-zinc-300/80 leading-relaxed mb-6">Start here: This combined module walks you through the anatomy of a neuron and the basics of electrophysiology. Trigger an action potential to watch how voltage changes over time.</p>
-          <button onClick={() => {
-            const navEvent = new CustomEvent('navigate', { detail: 'neuron' });
-            window.dispatchEvent(navEvent);
-          }} className="self-start glass-button bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-100 px-6 py-3 rounded-xl font-bold transition-all border border-emerald-500/30">
-            Open Lab 5 Workbook &rarr;
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div className="glass-card p-6 rounded-2xl flex flex-col justify-center items-center text-center">
+          <h3 className="text-lg font-bold text-zinc-100 mb-2">Mastery Progress</h3>
+          <div className="relative w-32 h-32 mb-4">
+             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+               <circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+               <circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(52, 211, 153, 0.8)" strokeWidth="8" strokeDasharray={`${(masteredDecks / totalDecks) * 251.2} 251.2`} className="transition-all duration-1000 ease-out" />
+             </svg>
+             <div className="absolute inset-0 flex flex-col items-center justify-center">
+               <span className="text-3xl font-bold text-emerald-400">{masteredDecks}</span>
+               <span className="text-xs text-zinc-500 font-medium uppercase tracking-wider">/ {totalDecks}</span>
+             </div>
+          </div>
+          <p className="text-xs text-zinc-400">Labelling decks mastered (≥80% accuracy)</p>
+          <button onClick={() => { window.dispatchEvent(new CustomEvent('navigate', { detail: 'trainer' })); }} className="mt-4 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-wider">
+            Go to Trainer &rarr;
           </button>
+        </div>
+
+        <div className="glass-card p-8 rounded-2xl group hover:border-emerald-500/30 transition-colors flex flex-col justify-center lg:col-span-2">
+          <h3 className="text-xl font-bold text-zinc-100 mb-4 flex items-center"><span className="text-emerald-400 mr-3">🧠</span> Lab 5: Spinal Cord Workbook</h3>
+          <p className="text-sm text-zinc-300/80 leading-relaxed mb-6">Start here: A stronger version of the Lab 5 page with cleaner hierarchy, better self-testing, lesion-localisation support, and a built-in quiz.</p>
+          <a href="/workbooks/lab5-spinal-cord-workbook.html" target="_blank" rel="noopener noreferrer" className="self-start glass-button bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-100 px-6 py-3 rounded-xl font-bold transition-all border border-emerald-500/30">
+            Open Lab 5 Workbook &rarr;
+          </a>
         </div>
 
         <div className="glass-card p-8 rounded-2xl flex flex-col group hover:border-blue-500/30 transition-colors">
@@ -76,6 +98,15 @@ export default function Dashboard() {
           </ul>
           <a href="mailto:feedback@neuromind.app?subject=ANHB2217%20Feedback" className="self-start glass-button bg-blue-600/20 hover:bg-blue-600/40 text-blue-100 px-6 py-3 rounded-xl font-bold transition-all border border-blue-500/30">
             Send Feedback
+          </a>
+        </div>
+        <div className="glass-card p-8 rounded-2xl flex flex-col group hover:border-violet-500/30 transition-colors">
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-zinc-100 mb-4 flex items-center"><span className="text-violet-400 mr-3">🗺️</span> Neuroanatomy Workbook</h3>
+            <p className="text-sm text-zinc-300/80 leading-relaxed mb-6">Explore the full landscape of the brain: Cortex, Brainstem, Cerebellum, and Basal Ganglia structures in one cohesive review.</p>
+          </div>
+          <a href="/workbooks/neuroanatomy-workbook.html" target="_blank" rel="noopener noreferrer" className="self-start glass-button bg-violet-600/20 hover:bg-violet-600/40 text-violet-100 px-6 py-3 rounded-xl font-bold transition-all border border-violet-500/30">
+            Open Neuroanatomy Workbook &rarr;
           </a>
         </div>
       </motion.div>
