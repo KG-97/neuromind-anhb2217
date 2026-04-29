@@ -51,27 +51,32 @@ export default function Dashboard() {
       initial="hidden"
       animate="visible"
     >
-      <motion.h2 variants={itemVariants} className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-400 mb-3 tracking-tight">High-Yield Overview</motion.h2>
-      <motion.p variants={itemVariants} className="text-zinc-400 mb-8 text-lg leading-relaxed max-w-3xl">Welcome to the ANHB2217 Interactive Atlas. This tool integrates dynamic anatomical study guides with an AI-powered tutor to help you prepare for your neurobiology lab exams.</motion.p>
+      <motion.h2 variants={itemVariants} className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-400 mb-3 tracking-tight">NeuroMind</motion.h2>
+      <motion.p variants={itemVariants} className="text-zinc-400 mb-8 text-lg leading-relaxed max-w-3xl">NeuroMind helps ANHB2217 students study faster with workbook-style revision, lesion logic, quick simulations, and AI explanations.</motion.p>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div className="glass-card p-8 rounded-2xl group hover:border-violet-500/30 transition-colors">
-          <h3 className="text-xl font-bold text-zinc-100 mb-4 flex items-center"><span className="text-violet-400 mr-3">⚡</span> Cranial Nerve Fiber Types</h3>
-          <p className="text-sm text-zinc-300/80 leading-relaxed font-medium bg-white/5 p-4 rounded-xl border border-white/5">Mnemonic: "Some Say Marry Money But My Brother Says Big Brains Matter More"</p>
+        <div className="glass-card p-8 rounded-2xl group hover:border-emerald-500/30 transition-colors flex flex-col justify-center">
+          <h3 className="text-xl font-bold text-zinc-100 mb-4 flex items-center"><span className="text-emerald-400 mr-3">🧠</span> Lab 5: Neuron Workbook</h3>
+          <p className="text-sm text-zinc-300/80 leading-relaxed mb-6">Start here: This combined module walks you through the anatomy of a neuron and the basics of electrophysiology. Trigger an action potential to watch how voltage changes over time.</p>
+          <button onClick={() => {
+            const navEvent = new CustomEvent('navigate', { detail: 'neuron' });
+            window.dispatchEvent(navEvent);
+          }} className="self-start glass-button bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-100 px-6 py-3 rounded-xl font-bold transition-all border border-emerald-500/30">
+            Open Lab 5 Workbook &rarr;
+          </button>
         </div>
 
         <div className="glass-card p-8 rounded-2xl flex flex-col group hover:border-blue-500/30 transition-colors">
-          <h3 className="text-xl font-bold text-zinc-100 mb-4 flex items-center"><span className="text-blue-400 mr-3">🩸</span> Quick Blood Supply Review</h3>
-          <div className="space-y-4 flex-1">
-            <div className="p-4 bg-indigo-900/20 backdrop-blur rounded-xl border border-indigo-500/20 shadow-inner">
-              <h4 className="font-bold text-indigo-300 mb-1">Anterior Circulation</h4>
-              <p className="text-sm text-indigo-200/70 block">Internal Carotid Arteries &rarr; Middle Cerebral (MCA) & Anterior Cerebral (ACA).</p>
-            </div>
-            <div className="p-4 bg-emerald-900/20 backdrop-blur rounded-xl border border-emerald-500/20 shadow-inner">
-              <h4 className="font-bold text-emerald-300 mb-1">Posterior Circulation</h4>
-              <p className="text-sm text-emerald-200/70 block">Vertebral Arteries &rarr; Basilar Artery &rarr; Posterior Cerebral (PCA).</p>
-            </div>
-          </div>
+          <h3 className="text-xl font-bold text-zinc-100 mb-4 flex items-center"><span className="text-blue-400 mr-3">💬</span> Feedback (Soft Launch)</h3>
+          <p className="text-sm text-zinc-300/80 mb-4">Help us improve the atlas before the public release. We want to know:</p>
+          <ul className="text-sm text-zinc-400 space-y-2 mb-6 list-disc pl-5">
+            <li>What confused you or slowed you down?</li>
+            <li>Which part saved you time?</li>
+            <li>What topic should be the next workbook?</li>
+          </ul>
+          <a href="mailto:feedback@neuromind.app?subject=ANHB2217%20Feedback" className="self-start glass-button bg-blue-600/20 hover:bg-blue-600/40 text-blue-100 px-6 py-3 rounded-xl font-bold transition-all border border-blue-500/30">
+            Send Feedback
+          </a>
         </div>
       </motion.div>
 

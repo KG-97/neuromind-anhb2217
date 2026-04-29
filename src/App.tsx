@@ -31,7 +31,7 @@ export default function App() {
     { id: 'brainstem', name: 'Brainstem & Localisation', icon: '🧭' },
     { id: 'senses', name: 'Special Senses', icon: '👁️' },
     { id: 'trainer', name: 'Labelling Trainer', icon: '🎯' },
-    { id: 'neuron', name: 'Neuron Lab', icon: '🧠✨' },
+    { id: 'neuron', name: 'Lab 5: Neuron Workbook', icon: '🧠✨' },
   ];
 
   const searchTerms = [
@@ -100,13 +100,24 @@ export default function App() {
         }
       }
     };
+    const handleNavigate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) {
+        setActiveTab(customEvent.detail);
+        window.scrollTo(0, 0);
+      }
+    };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isSearchOpen, filteredSearch, searchHighlightIdx]);
+    window.addEventListener('navigate', handleNavigate);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('navigate', handleNavigate);
+    };
+  }, [isSearchOpen, filteredSearch, searchHighlightIdx]);
 
   useEffect(() => {
     setSearchHighlightIdx(-1);
-  }, [searchQuery]);
   }, [searchQuery]);
 
   return (

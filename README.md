@@ -1,21 +1,22 @@
-# 🧠 ANHB2217 Neurobiology Master Atlas
+# 🧠 NeuroMind (ANHB2217 Master Atlas)
 
-A premium, interactive neurobiology study platform designed for high-yield anatomical review and AI-assisted learning. This atlas integrates structural diagrams, clinical cases, and real-time tutoring using Google Gemini.
+NeuroMind helps ANHB2217 students study faster with workbook-style revision, lesion logic, quick simulations, and AI explanations.
 
-## 🚀 Key Features
-- **9 Specialized Modules:** Coverage from basic Neuron physiology to complex Subcortical systems.
-- **AI-Powered Diagrams:** Generate custom textbook-quality SVGs with interactive "hover-to-learn" functionality.
-- **Global Search:** Instant navigation via `Command+K` (or `Ctrl+K`) search bar.
-- **Labelling Trainer:** Gamified matching games for cranial nerves, tracts, and blood supply.
-- **AI Tutor:** Context-aware assistant for clinical vignettes, mnemonics, and exam prep.
-- **Premium UI:** Glassmorphic dark-mode design with mobile-responsive navigation.
+## 🚀 Soft Launch Status
 
-## 🛠️ Tech Stack
-- **Frontend:** React + TypeScript + Tailwind CSS + Framer Motion
-- **Backend:** Express (Production-ready proxy)
-- **AI Core:** Google Gemini 3.1 Pro (Text/Reasoning) & Flash (Image Generation)
+- **Dashboard:** Live and functioning as the high-yield overview.
+- **Lab 5 Workbook:** The first workbook (Neurons & Action Potentials) is linked directly on the dashboard.
+- **Feedback:** We're currently collecting feedback to improve the platform.
 
-## 💻 Local Development
+### We want your feedback!
+Help us refine NeuroMind before the first public release. Ask yourself:
+- "Which part saved you time?"
+- "Which section felt confusing or too long?"
+- "What topic should be the next workbook?"
+
+Share your thoughts with us at [feedback@neuromind.app](mailto:feedback@neuromind.app?subject=ANHB2217%20Feedback).
+
+## 🛠️ Local Development
 
 1. **Install Dependencies:**
    ```bash
@@ -50,6 +51,8 @@ This project is configured for seamless deployment to **Render**, **Vercel**, or
 ### Render Deployment:
 The included `render.yaml` automates the setup. Simply connect your Git repository to Render, and it will handle the build and start commands automatically. **Important:** Remember to add your `GEMINI_API_KEY` to the Environment Variables in the Render dashboard.
 
----
-
-*Designed for ANHB2217 students to master neuroanatomy with clarity and speed.*
+## 🎯 Next Build Targets
+1. Action potentials workbook (improvements to the current simulation)
+2. Neuroanatomy workbook
+3. Better progress tracking across modules
+4. More structured AI help after wrong quiz answers
