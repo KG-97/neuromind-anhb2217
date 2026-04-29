@@ -1,10 +1,13 @@
-export enum Tab {
+export enum AtlasRoute {
   HOME = 'HOME',
-  NEURON = 'NEURON',
+  NEURON_LAB = 'NEURON_LAB',
   ELECTRO = 'ELECTRO',
   ANATOMY = 'ANATOMY',
   TUTOR = 'TUTOR'
 }
+
+export const Tab = AtlasRoute;
+export type Tab = AtlasRoute;
 
 export interface BrainRegion {
   id: string;

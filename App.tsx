@@ -1,8 +1,12 @@
+import React, { useMemo, useState } from 'react';
+import { Brain, Menu, X } from 'lucide-react';
+import { AtlasRoute } from './types';
+import { atlasDefaultRoute, atlasRouteRegistry } from './app/atlasRoutes';
 import React, { useEffect, useState } from 'react';
 import { Activity, Zap, Brain, GraduationCap, Menu, X, House, Download } from 'lucide-react';
 import { Tab } from './types';
 import StudyHub from './components/StudyHub';
-import NeuronModel from './components/NeuronModel';
+import NeuronLab from './components/NeuronLab';
 import ActionPotentialLab from './components/ActionPotentialLab';
 import BrainAtlas from './components/BrainAtlas';
 import AITutor from './components/AITutor';
@@ -13,7 +17,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>(Tab.HOME);
+  const [activeRoute, setActiveRoute] = useState<AtlasRoute>(atlasDefaultRoute);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
@@ -46,22 +50,26 @@ const App: React.FC = () => {
     setInstallPrompt(null);
   };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case Tab.HOME: return <StudyHub onNavigate={setActiveTab} />;
-      case Tab.NEURON: return <NeuronModel />;
-      case Tab.ELECTRO: return <ActionPotentialLab />;
-      case Tab.ANATOMY: return <BrainAtlas />;
-      case Tab.TUTOR: return <AITutor />;
-      default: return <StudyHub onNavigate={setActiveTab} />;
-    }
-  };
+  const routeById = useMemo(
+    () => Object.fromEntries(atlasRouteRegistry.map(route => [route.route, route])),
+    [],
+  );
 
-  const NavItem = ({ tab, label, icon: Icon }: { tab: Tab; label: string; icon: any }) => (
+  const activePage = routeById[activeRoute] ?? routeById[atlasDefaultRoute];
+
+  const renderNavButton = (
+    route: AtlasRoute,
+    label: string,
+    Icon: React.ComponentType<{ size?: number | string }>,
+  ) => (
     <button
-      onClick={() => { setActiveTab(tab); setMobileMenuOpen(false); }}
+      key={`${route}-${label}`}
+      onClick={() => {
+        setActiveRoute(route);
+        setMobileMenuOpen(false);
+      }}
       className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium ${
-        activeTab === tab
+        activeRoute === route
           ? 'bg-blue-600 text-white shadow-md'
           : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
       }`}
@@ -81,66 +89,33 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1 className="text-lg font-bold text-slate-800 leading-tight">NeuroMind</h1>
-              <p className="text-xs text-slate-500 font-medium tracking-wide">ANHB2217 COMPANION</p>
+              <p className="text-xs text-slate-500 font-medium tracking-wide">ATLAS V2 + NEURONLAB</p>
             </div>
           </div>
 
           <nav className="hidden md:flex items-center gap-2">
-            <NavItem tab={Tab.HOME} label="Dashboard" icon={House} />
-            <NavItem tab={Tab.NEURON} label="Neuron" icon={Activity} />
-            <NavItem tab={Tab.ELECTRO} label="Electrophysiology" icon={Zap} />
-            <NavItem tab={Tab.ANATOMY} label="Anatomy" icon={Brain} />
-            <NavItem tab={Tab.TUTOR} label="Study Vault" icon={GraduationCap} />
+            {atlasRouteRegistry.map(({ route, label, icon }) => renderNavButton(route, label, icon))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            {installPrompt && (
-              <button
-                onClick={handleInstall}
-                className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
-              >
-                <Download size={16} />
-                Download App
-              </button>
-            )}
-            <button
-              className="md:hidden p-2 text-slate-600"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
+          <button className="md:hidden p-2 text-slate-600" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X /> : <Menu />}
+          </button>
         </div>
 
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-2 shadow-lg absolute w-full left-0">
-            <NavItem tab={Tab.HOME} label="Dashboard" icon={House} />
-            <NavItem tab={Tab.NEURON} label="Neuron Model" icon={Activity} />
-            <NavItem tab={Tab.ELECTRO} label="Electrophysiology" icon={Zap} />
-            <NavItem tab={Tab.ANATOMY} label="Neuroanatomy" icon={Brain} />
-            <NavItem tab={Tab.TUTOR} label="Study Vault" icon={GraduationCap} />
-            {installPrompt && (
-              <button
-                onClick={handleInstall}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
-              >
-                <Download size={16} />
-                Download App
-              </button>
-            )}
+            {atlasRouteRegistry.map(({ route, mobileLabel, icon }) => renderNavButton(route, mobileLabel, icon))}
           </div>
         )}
       </header>
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {renderContent()}
+        {activePage?.render(setActiveRoute)}
       </main>
 
       <footer className="bg-white border-t border-slate-200 py-6 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center space-y-2">
-          <p className="text-slate-400 text-sm">
-            © {new Date().getFullYear()} ANHB2217 Study Tool. Powered by React & Gemini AI.
-          </p>
+          <p className="text-slate-400 text-sm">© {new Date().getFullYear()} ANHB2217 Study Tool. Atlas-integrated.</p>
           <a
             href={`${import.meta.env.BASE_URL}workbooks/lab5-spinal-cord-workbook.html`}
             target="_blank"
