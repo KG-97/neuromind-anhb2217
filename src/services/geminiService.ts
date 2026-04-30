@@ -2,8 +2,8 @@ import { GoogleGenAI } from "@google/genai";
 
 // ── Central model constants ──────────────────────────────────────────────────
 const MODELS = {
-  text: 'gemini-1.5-pro',
-  image: 'gemini-1.5-flash',
+  text: 'gemini-2.5-flash',
+  image: 'gemini-2.5-flash',
 } as const;
 
 const TIMEOUT_MS = 25000;
