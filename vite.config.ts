@@ -8,14 +8,12 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   const isProd = mode === 'production';
 
-  if (isProd && !env.GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY missing in production env');
-  }
+  const geminiApiKey = env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
 
   return {
     plugins: [react(), tailwindcss(), viteSingleFile()],
     define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env.GEMINI_API_KEY': JSON.stringify(geminiApiKey),
     },
     resolve: {
       alias: {
