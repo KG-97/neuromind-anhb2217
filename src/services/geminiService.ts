@@ -22,11 +22,10 @@ export class AIError extends Error {
 let apiKey = process.env.GEMINI_API_KEY || '';
 apiKey = apiKey.replace(/[\n\r"' ]+/g, '');
 
-if (!apiKey) {
-  throw new AIError('NO_KEY', 'GEMINI_API_KEY environment variable is required');
-}
+const AI_AVAILABLE = Boolean(apiKey) && !apiKey.toLowerCase().includes('dummy');
+const ai = AI_AVAILABLE ? new GoogleGenAI({ apiKey }) : null;
 
-const ai = new GoogleGenAI({ apiKey });
+export { AI_AVAILABLE };
 
 // ── Helper: wrap promise with timeout ───────────────────────────────────────
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -40,8 +39,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 
 // ── Public API ───────────────────────────────────────────────────────────────
 export async function generateContent(prompt: string, systemInstruction: string): Promise<string> {
-  if (apiKey.includes('dummy')) {
-    throw new AIError('NO_KEY', 'Gemini API Key is not configured. Please add a valid key to your .env file.');
+  if (!AI_AVAILABLE || !ai) {
+    throw new AIError('NO_KEY', 'Gemini API key is not configured. AI features are disabled until you add a valid key.');
   }
   try {
     const response = await withTimeout(
@@ -67,8 +66,8 @@ export async function generateContent(prompt: string, systemInstruction: string)
 }
 
 export async function generateImage(prompt: string): Promise<string | null> {
-  if (apiKey.includes('dummy')) {
-    throw new AIError('NO_KEY', 'Gemini API Key is not configured.');
+  if (!AI_AVAILABLE || !ai) {
+    throw new AIError('NO_KEY', 'Gemini API key is not configured. AI features are disabled until you add a valid key.');
   }
   const response = await withTimeout(
     ai.models.generateContent({

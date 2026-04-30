@@ -22,6 +22,7 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [deepLinkId, setDeepLinkId] = useState<string | number | null>(null);
     const [isStaticGitHub, setIsStaticGitHub] = useState(false);
+    const [aiAvailable, setAiAvailable] = useState<boolean | null>(null);
 
   const navItems = [
     { id: 'dashboard', name: 'Dashboard Overview', icon: '🏠' },
@@ -77,11 +78,19 @@ export default function App() {
 
   useEffect(() => {
     const host = window.location.hostname;
-    setIsStaticGitHub(
-      host.endsWith('github.io') ||
-      host.includes('github.dev') ||
-      window.location.pathname.startsWith('/neuromind-anhb2217/')
-    );
+    const staticGitHub = host.endsWith('github.io') || host.includes('github.dev') || window.location.pathname.startsWith('/neuromind-anhb2217/');
+    setIsStaticGitHub(staticGitHub);
+
+    if (!staticGitHub) {
+      fetch('/api/status')
+        .then((res) => res.json())
+        .then((data) => {
+          setAiAvailable(Boolean(data.aiAvailable));
+        })
+        .catch(() => {
+          setAiAvailable(false);
+        });
+    }
   }, []);
 
   useEffect(() => {
@@ -135,6 +144,11 @@ export default function App() {
       {isStaticGitHub && (
         <div className="absolute inset-x-0 top-0 z-40 bg-amber-500/10 border-b border-amber-400/20 text-amber-100 text-sm px-4 py-3 backdrop-blur-sm">
           <strong>Notice:</strong> This GitHub Pages deployment serves the static atlas only. AI generation and image generation require the Node.js backend. Deploy the full app to Render/Vercel or run locally with `GEMINI_API_KEY` to use the AI features.
+        </div>
+      )}
+      {!isStaticGitHub && aiAvailable === false && (
+        <div className="absolute inset-x-0 top-0 z-40 bg-rose-500/10 border-b border-rose-400/20 text-rose-100 text-sm px-4 py-3 backdrop-blur-sm">
+          <strong>Notice:</strong> The backend is running, but the Gemini API key is missing or invalid. AI features are disabled until `GEMINI_API_KEY` is configured.
         </div>
       )}
       {/* Search Overlay */}

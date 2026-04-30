@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from "express";
-import { generateContent, generateImage } from "./src/services/geminiService.ts";
+import { generateContent, generateImage, AIError, AI_AVAILABLE } from "./src/services/geminiService.ts";
 import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -21,7 +21,8 @@ async function startServer() {
       res.json({ response });
     } catch (error: any) {
       console.error("GENERATE ERROR:", error);
-      res.status(500).json({ error: "Failed to generate content", details: error?.message || String(error) });
+      const status = error instanceof AIError && error.code === 'NO_KEY' ? 503 : 500;
+      res.status(status).json({ error: error?.message || "Failed to generate content", code: error?.code || 'UNKNOWN' });
     }
   });
 
@@ -36,11 +37,19 @@ async function startServer() {
       }
     } catch (error: any) {
       console.error("GENERATE IMAGE ERROR:", error);
-      res.status(500).json({ error: "Failed to generate image", details: error?.message || String(error) });
+      const status = error instanceof AIError && error.code === 'NO_KEY' ? 503 : 500;
+      res.status(status).json({ error: error?.message || "Failed to generate image", code: error?.code || 'UNKNOWN' });
     }
   });
 
   // Vite middleware for development
+  app.get('/api/status', (req, res) => {
+    res.json({
+      aiAvailable: AI_AVAILABLE,
+      message: AI_AVAILABLE ? 'Gemini API key configured.' : 'Gemini API key is not configured. AI features are disabled.',
+    });
+  });
+
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },

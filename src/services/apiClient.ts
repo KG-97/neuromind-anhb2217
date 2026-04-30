@@ -10,7 +10,14 @@ export async function apiPost<T = any>(path: string, body: unknown): Promise<T> 
 
   if (!response.ok) {
     const text = await response.text().catch(() => '');
-    throw new Error(`API request failed: ${response.status} ${response.statusText} ${text}`);
+    let message = text;
+    try {
+      const json = JSON.parse(text || '{}');
+      message = json.error || json.message || text;
+    } catch {
+      // ignore parse errors
+    }
+    throw new Error(`API request failed: ${response.status} ${response.statusText} ${message}`);
   }
 
   return response.json();
