@@ -298,7 +298,7 @@ export default function App() {
       </main>
 
       {/* Floating AI Tutor Widget */}
-      <AITutor />
+      <AITutor aiAvailable={aiAvailable} />
     </div>
   );
 }

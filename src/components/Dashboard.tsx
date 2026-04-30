@@ -107,6 +107,40 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
+      <motion.div variants={itemVariants} className="glass-card p-8 rounded-2xl relative overflow-hidden mb-8 border border-white/10 bg-zinc-950/80">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-500 animate-gradient"></div>
+        <div className="relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h3 className="text-2xl font-bold text-zinc-100 mb-2">Fast Pass Study Plan</h3>
+              <p className="text-sm text-zinc-400 max-w-2xl">Use these high-yield ANHB2217 topics to quickly generate quizzes and explanations with the AI Tutor.</p>
+            </div>
+            <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-400/20 rounded-full px-3 py-2">Exam-ready planning</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {[
+              { label: 'Meninges & CSF flow', event: { type: 'quiz', value: 'CSF circulation and meninges anatomy' } },
+              { label: 'Corticospinal pathway', event: { type: 'quiz', value: 'Corticospinal tract lesion and motor deficits' } },
+              { label: 'Wallenberg syndrome', event: { type: 'quiz', value: 'Wallenberg syndrome localisation and symptoms' } },
+              { label: 'Brodmann areas', event: { type: 'explain', value: 'Brodmann areas and cortical function mapping' } },
+              { label: 'Cranial nerve X', event: { type: 'explain', value: 'Vagus nerve anatomy and clinical presentation' } },
+              { label: 'Synaptic transmission', event: { type: 'explain', value: 'Synaptic transmission and neuromodulation' } },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent(`aitutor:${item.event.type}`, { detail: { [item.event.type === 'quiz' ? 'topic' : 'concept']: item.event.value } }));
+                }}
+                className="text-left p-4 bg-zinc-900/80 border border-white/10 rounded-3xl transition hover:border-emerald-500/30 hover:bg-zinc-900"
+              >
+                <p className="font-semibold text-zinc-100">{item.label}</p>
+                <p className="text-sm text-zinc-500 mt-2">Launch the AI Tutor for this high-yield topic.</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
       <motion.div variants={itemVariants} className="glass-card p-8 rounded-2xl flex flex-col relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-blue-500 animate-gradient"></div>
         <h3 className="text-2xl font-bold text-zinc-100 mb-3 flex items-center"><span className="mr-3 text-fuchsia-400">🔬</span> Anatomical Image Generator</h3>

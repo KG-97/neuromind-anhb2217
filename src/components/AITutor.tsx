@@ -18,7 +18,28 @@ const renderMarkdown = (text: string) => {
   });
 };
 
-export default function AITutor() {
+interface AITutorProps {
+  aiAvailable: boolean | null;
+}
+
+const recommendedTopics = [
+  'Dura Mater and subarachnoid space',
+  'Corticospinal tract lesion',
+  'Wallenberg syndrome',
+  'Olfactory nerve anatomy',
+  'CSF circulation and hydrocephalus',
+  'Brodmann areas 1,2,3,4',
+];
+
+const recommendedConcepts = [
+  'Action Potential generation',
+  'Synaptic Transmission',
+  'Cerebral cortex layers',
+  'Basal ganglia direct and indirect pathways',
+  'Cranial nerve nuclei location',
+];
+
+export default function AITutor({ aiAvailable }: AITutorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeMode, setActiveMode] = useState<'quiz' | 'explain'>('quiz');
 
@@ -40,15 +61,33 @@ export default function AITutor() {
         setIsOpen(true);
         setActiveMode('explain');
         setConcept(customEvent.detail.concept);
-        // We defer the fetch slightly to ensure state is set, but we can just call it with the concept directly
         triggerExplain(customEvent.detail.concept);
       }
     };
+
+    const handleQuizEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ topic: string }>;
+      if (customEvent.detail?.topic) {
+        setIsOpen(true);
+        setActiveMode('quiz');
+        setTopic(customEvent.detail.topic);
+        handleGenerateQuiz(customEvent.detail.topic);
+      }
+    };
+
     window.addEventListener('aitutor:explain', handleExplainEvent);
-    return () => window.removeEventListener('aitutor:explain', handleExplainEvent);
+    window.addEventListener('aitutor:quiz', handleQuizEvent);
+    return () => {
+      window.removeEventListener('aitutor:explain', handleExplainEvent);
+      window.removeEventListener('aitutor:quiz', handleQuizEvent);
+    };
   }, []);
 
   const triggerExplain = async (queryToExplain: string) => {
+    if (aiAvailable === false) {
+      setExplanation('AI is not available. Configure the backend key or deploy the full app to use explanations.');
+      return;
+    }
     setLoading(true);
     setExplanation('');
     const sys = "You are an expert neurobiology professor. Provide a highly educational, clear, and easy to understand explanation of the given concept. Use bullet points and bold text where appropriate. Keep it concise.";
@@ -61,17 +100,22 @@ export default function AITutor() {
     setLoading(false);
   };
 
-  const handleGenerateQuiz = async () => {
-    if (!topic.trim()) return;
+  const handleGenerateQuiz = async (topicToUse?: string) => {
+    const promptTopic = topicToUse?.trim() || topic.trim();
+    if (!promptTopic) return;
+    if (aiAvailable === false) {
+      setError('AI is not available. Configure the backend key or deploy the full app to use quizzes.');
+      return;
+    }
     setLoading(true);
     setError('');
     setQuizData(null);
     setSelectedOption(null);
 
-    const sys = "You are an expert neurobiology professor. Generate a multiple choice question about the given topic. Output strictly a JSON object with this format: { \"question\": \"...\", \"options\": [\"...\", \"...\", \"...\", \"...\"], \"correctAnswer\": 0, \"explanation\": \"...\" }. Do NOT include markdown code blocks around the JSON.";
+    const sys = "You are an expert neurobiology professor preparing ANHB2217 exam questions. Generate a multiple choice question about the given topic. Output strictly a JSON object with this format: { \"question\": \"...\", \"options\": [\"...\", \"...\", \"...\", \"...\"], \"correctAnswer\": 0, \"explanation\": \"...\" }. Do NOT include markdown code blocks around the JSON.";
     
     try {
-      const data = await apiPost('/api/generate', { prompt: topic, systemInstruction: sys });
+      const data = await apiPost('/api/generate', { prompt: promptTopic, systemInstruction: sys });
       const result = data.response ? data.response.replace(/```json/gi, '').replace(/```/g, '').trim() : '';
       
       const parsed = JSON.parse(result);
@@ -86,9 +130,10 @@ export default function AITutor() {
     setLoading(false);
   };
 
-  const handleExplain = async () => {
-    if (!concept.trim()) return;
-    await triggerExplain(concept);
+  const handleExplain = async (conceptToUse?: string) => {
+    const promptConcept = conceptToUse?.trim() || concept.trim();
+    if (!promptConcept) return;
+    await triggerExplain(promptConcept);
   };
 
   if (!isOpen) {
@@ -148,13 +193,31 @@ export default function AITutor() {
 
         {/* Main Panel */}
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+          {aiAvailable === false && (
+            <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-100 text-sm">
+              AI features are currently disabled. Configure the backend `GEMINI_API_KEY` or deploy the full app to enable quiz and explanation generation.
+            </div>
+          )}
           {activeMode === 'quiz' ? (
             <div>
               <h2 className="text-xl font-bold text-zinc-50 mb-4 flex items-center gap-2">
                 <GraduationCap size={22} className="text-violet-400" />
                 Exam Prep
               </h2>
-              <div className="flex gap-3 mb-6">
+              <div className="flex flex-col gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {recommendedTopics.map((topicOption) => (
+                  <button
+                    key={topicOption}
+                    onClick={() => handleGenerateQuiz(topicOption)}
+                    disabled={loading || aiAvailable === false}
+                    className="text-left px-4 py-3 glass-button bg-zinc-900 border border-white/10 rounded-2xl text-zinc-200 hover:border-violet-500 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {topicOption}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-3">
                 <input
                   type="text"
                   value={topic}
@@ -164,13 +227,14 @@ export default function AITutor() {
                   className="flex-1 px-4 py-2 glass-button text-zinc-100 rounded-lg outline-none focus:border-violet-500/50"
                 />
                 <button
-                  onClick={handleGenerateQuiz}
-                  disabled={loading}
+                  onClick={() => handleGenerateQuiz()}
+                  disabled={loading || aiAvailable === false}
                   className="px-5 py-2 glass-button text-violet-300 rounded-lg disabled:opacity-50 font-medium"
                 >
                   {loading ? 'Generating...' : 'Create Question'}
                 </button>
               </div>
+            </div>
 
               {error && (
                 <div className="p-4 glass-card bg-rose-500/20 border-rose-500/50 rounded-lg text-rose-200 text-sm mb-4">
@@ -218,22 +282,36 @@ export default function AITutor() {
                 <BookOpen size={22} className="text-blue-400" />
                 Concept Explainer
               </h2>
-              <div className="flex gap-3 mb-6">
-                <input
-                  type="text"
-                  value={concept}
-                  onChange={e => setConcept(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleExplain()}
-                  placeholder="Enter a concept (e.g. 'Action Potential')"
-                  className="flex-1 px-4 py-2 glass-button text-zinc-100 rounded-lg outline-none focus:border-blue-500/50"
-                />
-                <button
-                  onClick={handleExplain}
-                  disabled={loading}
-                  className="px-5 py-2 glass-button text-blue-300 rounded-lg disabled:opacity-50 font-medium"
-                >
-                  {loading ? 'Explaining...' : 'Explain'}
-                </button>
+              <div className="space-y-3 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {recommendedConcepts.map((conceptOption) => (
+                    <button
+                      key={conceptOption}
+                      onClick={() => handleExplain(conceptOption)}
+                      disabled={loading || aiAvailable === false}
+                      className="text-left px-4 py-3 glass-button bg-zinc-900 border border-white/10 rounded-2xl text-zinc-200 hover:border-blue-500 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {conceptOption}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={concept}
+                    onChange={e => setConcept(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleExplain()}
+                    placeholder="Enter a concept (e.g. 'Action Potential')"
+                    className="flex-1 px-4 py-2 glass-button text-zinc-100 rounded-lg outline-none focus:border-blue-500/50"
+                  />
+                  <button
+                    onClick={() => handleExplain()}
+                    disabled={loading || aiAvailable === false}
+                    className="px-5 py-2 glass-button text-blue-300 rounded-lg disabled:opacity-50 font-medium"
+                  >
+                    {loading ? 'Explaining...' : 'Explain'}
+                  </button>
+                </div>
               </div>
               {explanation && (
                 <div className="p-5 glass-card bg-blue-500/10 border-blue-500/30 rounded-lg fade-in">
