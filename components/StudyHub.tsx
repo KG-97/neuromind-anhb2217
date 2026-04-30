@@ -130,7 +130,7 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {[
           { title: 'Neuron Model', description: 'Review structures and function.', tab: Tab.NEURON_LAB, icon: Activity },
-          { title: 'Neuron Lab', description: 'Run the combined neuron structure + electrophysiology flow.', tab: Tab.NEURON, icon: Activity },
+          { title: 'Neuron Lab', description: 'Run the combined neuron structure + electrophysiology flow.', tab: Tab.NEURON_LAB, icon: Activity },
           { title: 'Electrophysiology Lab', description: 'Replay the action potential sequence.', tab: Tab.ELECTRO, icon: Zap },
           { title: 'Brain Atlas', description: 'Revise anatomy and clinical correlates.', tab: Tab.ANATOMY, icon: Brain },
           { title: 'AI Tutor', description: 'Generate a question or explain a concept.', tab: Tab.TUTOR, icon: GraduationCap },
@@ -195,7 +195,7 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
             <button
-              onClick={() => onNavigate(Tab.NEURON)}
+              onClick={() => onNavigate(Tab.NEURON_LAB)}
               className="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 transition-colors"
             >
               After workbook: open Neuron Lab

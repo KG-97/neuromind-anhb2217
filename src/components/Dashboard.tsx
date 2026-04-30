@@ -10,7 +10,7 @@ export default function Dashboard() {
 
   const totalDecks = 12; // From Trainer.tsx
   const masteredDecks = useMemo(() => {
-    return Object.values(scores).filter(s => s && s.best >= 80).length;
+    return (Object.values(scores) as Array<{ best: number } | undefined>).filter((s) => s && s.best >= 80).length;
   }, [scores]);
 
   const handleGenerateImage = async () => {
