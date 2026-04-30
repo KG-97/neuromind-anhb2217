@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { useScores } from '../hooks/useScores';
+import { apiPost } from '../services/apiClient';
 
 export default function Dashboard() {
   const [imagePrompt, setImagePrompt] = useState('');
@@ -20,12 +21,7 @@ export default function Dashboard() {
     
     try {
       const fullPrompt = `Create a highly detailed, textbook-quality medical illustration of the ${imagePrompt}. Ensure scientifically accurate neuroanatomical structures, soft clinical lighting, and a dark background with educational textbook styling.`;
-      const res = await fetch('/api/generate-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: fullPrompt }),
-      });
-      const data = await res.json();
+      const data = await apiPost('/api/generate-image', { prompt: fullPrompt });
       if (data.imageUrl) {
         setGeneratedImage(data.imageUrl);
       } else {

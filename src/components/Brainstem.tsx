@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useProgress } from '../hooks/useProgress';
 import { useScores } from '../hooks/useScores';
+import { apiPost } from '../services/apiClient';
 
 type Syndrome = {
   id: string;
@@ -197,12 +198,7 @@ export default function Brainstem() {
     try {
       const sysInstruction = "You are an expert neuroanatomy professor teaching ANHB2217. Return ONLY raw HTML for a <div>. No code fences. Use <strong>, <ul>, <li>, <br>, <details>, <summary>.";
       const prompt = `Generate a realistic "mystery" brainstem-stroke vignette for a medical/neuroscience student. Pick ONE of: Weber, Benedikt, medial pontine (Foville), Wallenberg (lateral medullary), or medial medullary (Déjerine). Write the 3-sentence case WITHOUT naming the syndrome. Then list 3 questions: (1) which cranial nerves / tracts are involved, (2) which arterial territory is occluded, (3) the eponymous syndrome name. Put the answers inside a <details><summary>Reveal answers</summary><div class="mt-2 p-3 bg-zinc-800 border border-zinc-700 rounded text-zinc-300">...</div></details> block.`;
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, systemInstruction: sysInstruction }),
-      });
-      const result = await res.json();
+      const result = await apiPost('/api/generate', { prompt, systemInstruction: sysInstruction });
       setCaseHtml(result.response);
     } catch {
       setCaseHtml('<div class="text-rose-500 font-medium">Error: Unable to reach the AI tutor right now.</div>');

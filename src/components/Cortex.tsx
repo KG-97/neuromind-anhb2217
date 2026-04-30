@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { apiPost } from '../services/apiClient';
 
 export default function Cortex() {
   const [aiResponse, setAiResponse] = useState('');
@@ -61,12 +62,7 @@ export default function Cortex() {
         prompt = `Create a short, realistic 2-sentence clinical vignette describing a patient with a lesion or issue affecting the ${topic}. Then, ask the student a specific multiple-choice question about the expected symptoms or the anatomical localization. Put the correct answer and a brief educational explanation inside a <details><summary>Click for Answer</summary><div class="mt-2 p-3 bg-zinc-800 border border-zinc-700 rounded text-zinc-300">...</div></details> tag.`;
       }
 
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, systemInstruction: sysInstruction }),
-      });
-      const result = await res.json();
+      const result = await apiPost('/api/generate', { prompt, systemInstruction: sysInstruction });
       setAiResponse(result.response);
     } catch (e) {
       setAiResponse('<div class="text-rose-500 font-medium">Error: Unable to reach the AI tutor at this time. Please try again later.</div>');
@@ -103,12 +99,7 @@ export default function Cortex() {
       5. Include <style>.cortex-interactive { cursor: pointer; transition: all 0.2s; } .cortex-interactive:hover { filter: drop-shadow(0px 0px 8px #3b82f6); opacity: 0.9; stroke-width: 3; }</style>`;
       }
 
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, systemInstruction: sysInstruction }),
-      });
-      const result = await res.json();
+      const result = await apiPost('/api/generate', { prompt, systemInstruction: sysInstruction });
       
       const svgMatch = result.response?.match(/<svg[\s\S]*?<\/svg>/i);
 

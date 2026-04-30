@@ -21,6 +21,7 @@ export default function App() {
     const [activeTab, setActiveTab] = useState<string>(() => localStorage.getItem('nm_activeTab') || 'dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [deepLinkId, setDeepLinkId] = useState<string | number | null>(null);
+    const [isStaticGitHub, setIsStaticGitHub] = useState(false);
 
   const navItems = [
     { id: 'dashboard', name: 'Dashboard Overview', icon: '🏠' },
@@ -75,6 +76,15 @@ export default function App() {
   }, [activeTab]);
 
   useEffect(() => {
+    const host = window.location.hostname;
+    setIsStaticGitHub(
+      host.endsWith('github.io') ||
+      host.includes('github.dev') ||
+      window.location.pathname.startsWith('/neuromind-anhb2217/')
+    );
+  }, []);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
@@ -122,6 +132,11 @@ export default function App() {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-zinc-950 text-zinc-100 overflow-hidden relative font-sans selection:bg-violet-500/30">
+      {isStaticGitHub && (
+        <div className="absolute inset-x-0 top-0 z-40 bg-amber-500/10 border-b border-amber-400/20 text-amber-100 text-sm px-4 py-3 backdrop-blur-sm">
+          <strong>Notice:</strong> This GitHub Pages deployment serves the static atlas only. AI generation and image generation require the Node.js backend. Deploy the full app to Render/Vercel or run locally with `GEMINI_API_KEY` to use the AI features.
+        </div>
+      )}
       {/* Search Overlay */}
       <AnimatePresence>
         {isSearchOpen && (

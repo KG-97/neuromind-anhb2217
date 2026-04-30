@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
+import { apiPost } from '../services/apiClient';
 
 const cns = {
   1: { r: 'I', n: 'Olfactory', t: 'Sensory', f: 'Smell', l: 'Cribriform plate', col: 'emerald' },
@@ -101,12 +102,7 @@ export default function Cranial({ initialId }: { initialId?: number }) {
         prompt = `Create a short, realistic 2-sentence clinical vignette describing a patient with a lesion or issue affecting ${cnName}. Then, ask the student a specific multiple-choice question about the expected symptoms or the anatomical localization. Put the correct answer and a brief educational explanation inside a <details><summary>Click for Answer</summary><div class="mt-2 p-3 bg-zinc-800 border border-zinc-700 rounded text-zinc-300">...</div></details> tag.`;
       }
 
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, systemInstruction: sysInstruction }),
-      });
-      const result = await res.json();
+      const result = await apiPost('/api/generate', { prompt, systemInstruction: sysInstruction });
       setAiResponse(result.response);
     } catch (e) {
       setAiResponse('<div class="text-rose-500 font-medium">Error: Unable to reach the AI tutor at this time. Please try again later.</div>');
@@ -131,12 +127,7 @@ export default function Cranial({ initialId }: { initialId?: number }) {
       5. **INTERACTIVITY (Crucial Requirement):** Wrap at least 4 key anatomical structures in <g class="interactive"> tags. Inside EACH of these <g> tags, put a <title> tag with a 1-2 sentence educational explanation of that structure so it appears as a tooltip on hover.
       6. Include an embedded <style> tag to add hover effects: .interactive { cursor: pointer; transition: all 0.2s; } .interactive:hover { filter: drop-shadow(0px 0px 8px ${accentColor}); opacity: 0.9; stroke-width: 3; }`;
 
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, systemInstruction: sysInstruction }),
-      });
-      const result = await res.json();
+      const result = await apiPost('/api/generate', { prompt, systemInstruction: sysInstruction });
       
       const svgMatch = result.response?.match(/<svg[\s\S]*?<\/svg>/i);
 

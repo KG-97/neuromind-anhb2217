@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { apiPost } from '../services/apiClient';
 
 const subcortical = {
   'basal-ganglia': {
@@ -114,12 +115,7 @@ export default function Subcortical({ initialId }: { initialId?: string }) {
         prompt = `Create a 2-sentence clinical vignette for a patient with a lesion in the ${topic}. Then ask a multiple-choice question. Put the answer in a <details> block.`;
       }
 
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, systemInstruction: sysInstruction }),
-      });
-      const result = await res.json();
+      const result = await apiPost('/api/generate', { prompt, systemInstruction: sysInstruction });
       setAiResponse(result.response);
     } catch (e) {
       setAiResponse('<div class="text-rose-500 font-medium">Error: Unable to reach the AI tutor at this time.</div>');
@@ -142,12 +138,7 @@ export default function Subcortical({ initialId }: { initialId?: string }) {
       4. If topic is Basal Ganglia, show the Direct vs Indirect circuit with colored arrows.
       5. Include <style>.interactive { cursor: pointer; transition: all 0.2s; } .interactive:hover { filter: drop-shadow(0px 0px 8px #a855f7); opacity: 0.9; stroke-width: 3; }</style>`;
 
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, systemInstruction: sysInstruction }),
-      });
-      const result = await res.json();
+      const result = await apiPost('/api/generate', { prompt, systemInstruction: sysInstruction });
       
       const svgMatch = result.response?.match(/<svg[\s\S]*?<\/svg>/i);
 

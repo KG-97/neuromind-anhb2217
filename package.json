@@ -8,10 +8,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "NODE_ENV=production npx tsx server.ts",
-        "start:local": "NODE_ENV=production GEMINI_API_KEY=dummy-local npx tsx server.ts",
+    "start:local": "NODE_ENV=production GEMINI_API_KEY=dummy-local npx tsx server.ts",
+    "deploy:render": "npm run build && echo 'Deploy with NODE_ENV=production npx tsx server.ts and add GEMINI_API_KEY to your host environment'",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-        "build:gh-pages": "vite build --base=/neuromind-anhb2217/"
+    "build:gh-pages": "vite build --base=/neuromind-anhb2217/"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

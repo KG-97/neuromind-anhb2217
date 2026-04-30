@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bot, BookOpen, CheckCircle, XCircle, HelpCircle, GraduationCap, X } from 'lucide-react';
+import { apiPost } from '../services/apiClient';
 
 const renderMarkdown = (text: string) => {
   const lines = text.split('\n');
@@ -52,12 +53,7 @@ export default function AITutor() {
     setExplanation('');
     const sys = "You are an expert neurobiology professor. Provide a highly educational, clear, and easy to understand explanation of the given concept. Use bullet points and bold text where appropriate. Keep it concise.";
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: `Explain why this is incorrect or clarify the concept: ${queryToExplain}`, systemInstruction: sys }),
-      });
-      const data = await res.json();
+      const data = await apiPost('/api/generate', { prompt: `Explain why this is incorrect or clarify the concept: ${queryToExplain}`, systemInstruction: sys });
       setExplanation(data.response || 'Failed to generate explanation.');
     } catch (e) {
       setExplanation('Failed to generate explanation.');
@@ -75,12 +71,7 @@ export default function AITutor() {
     const sys = "You are an expert neurobiology professor. Generate a multiple choice question about the given topic. Output strictly a JSON object with this format: { \"question\": \"...\", \"options\": [\"...\", \"...\", \"...\", \"...\"], \"correctAnswer\": 0, \"explanation\": \"...\" }. Do NOT include markdown code blocks around the JSON.";
     
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: topic, systemInstruction: sys }),
-      });
-      const data = await res.json();
+      const data = await apiPost('/api/generate', { prompt: topic, systemInstruction: sys });
       const result = data.response ? data.response.replace(/```json/gi, '').replace(/```/g, '').trim() : '';
       
       const parsed = JSON.parse(result);
