@@ -143,12 +143,12 @@ export default function App() {
     <div className="flex flex-col md:flex-row h-screen bg-zinc-950 text-zinc-100 overflow-hidden relative font-sans selection:bg-violet-500/30">
       {isStaticGitHub && (
         <div className="absolute inset-x-0 top-0 z-40 bg-amber-500/10 border-b border-amber-400/20 text-amber-100 text-sm px-4 py-3 backdrop-blur-sm">
-          <strong>Notice:</strong> This GitHub Pages deployment serves the static atlas only. AI generation and image generation require the Node.js backend. Deploy the full app to Render/Vercel or run locally with `GEMINI_API_KEY` to use the AI features.
+          <strong>Notice:</strong> This GitHub Pages deployment serves the static atlas only. AI generation and image generation require the Node.js backend. Deploy the full app to Render/Vercel or run locally with `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) to use the AI features.
         </div>
       )}
       {!isStaticGitHub && aiAvailable === false && (
         <div className="absolute inset-x-0 top-0 z-40 bg-rose-500/10 border-b border-rose-400/20 text-rose-100 text-sm px-4 py-3 backdrop-blur-sm">
-          <strong>Notice:</strong> The backend is running, but the Gemini API key is missing or invalid. AI features are disabled until `GEMINI_API_KEY` is configured.
+          <strong>Notice:</strong> The backend is running, but the Gemini API key is missing or invalid. AI features are disabled until `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) is configured.
         </div>
       )}
       {/* Search Overlay */}
