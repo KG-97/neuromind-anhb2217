@@ -19,7 +19,8 @@ export class AIError extends Error {
 }
 
 // ── API key setup ────────────────────────────────────────────────────────────
-let apiKey = process.env.GEMINI_API_KEY || '';
+const rawApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || ''
+let apiKey = rawApiKey;
 apiKey = apiKey.replace(/[\n\r"' ]+/g, '');
 
 const AI_AVAILABLE = Boolean(apiKey) && !apiKey.toLowerCase().includes('dummy');
@@ -40,7 +41,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 // ── Public API ───────────────────────────────────────────────────────────────
 export async function generateContent(prompt: string, systemInstruction: string): Promise<string> {
   if (!AI_AVAILABLE || !ai) {
-    throw new AIError('NO_KEY', 'Gemini API key is not configured. AI features are disabled until you add a valid key.');
+    throw new AIError('NO_KEY', 'Gemini API key is not configured. Set GEMINI_API_KEY (or GOOGLE_API_KEY) to enable AI features.');
   }
   try {
     const response = await withTimeout(
@@ -67,7 +68,7 @@ export async function generateContent(prompt: string, systemInstruction: string)
 
 export async function generateImage(prompt: string): Promise<string | null> {
   if (!AI_AVAILABLE || !ai) {
-    throw new AIError('NO_KEY', 'Gemini API key is not configured. AI features are disabled until you add a valid key.');
+    throw new AIError('NO_KEY', 'Gemini API key is not configured. Set GEMINI_API_KEY (or GOOGLE_API_KEY) to enable AI features.');
   }
   const response = await withTimeout(
     ai.models.generateContent({
