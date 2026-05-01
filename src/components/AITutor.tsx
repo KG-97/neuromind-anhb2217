@@ -195,7 +195,7 @@ export default function AITutor({ aiAvailable }: AITutorProps) {
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
           {aiAvailable === false && (
             <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-100 text-sm">
-              AI features are currently disabled. Configure the backend `GEMINI_API_KEY` or deploy the full app to enable quiz and explanation generation.
+              AI features are currently disabled. Configure the backend `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) or deploy the full app to enable quiz and explanation generation.
             </div>
           )}
           {activeMode === 'quiz' ? (
