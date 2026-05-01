@@ -1,7 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Brain, Menu, X } from 'lucide-react';
-import { AtlasRoute } from './types';
+import { Activity, Zap, Brain, GraduationCap, Menu, X, House, Download } from 'lucide-react';
+import { AtlasRoute, Tab } from './types';
 import { atlasDefaultRoute, atlasRouteRegistry } from './app/atlasRoutes';
+import StudyHub from './components/StudyHub';
+import NeuronLab from './components/NeuronLab';
+import ActionPotentialLab from './components/ActionPotentialLab';
+import BrainAtlas from './components/BrainAtlas';
+import AITutor from './components/AITutor';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
