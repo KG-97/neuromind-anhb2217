@@ -34,6 +34,13 @@ Share your thoughts with us at [feedback@neuromind.app](mailto:feedback@neuromin
    npm run dev
    ```
 
+3. **Run API Key Smoke Test (recommended before deploy):**
+   ```bash
+   GEMINI_API_KEY=your_api_key_here npm run test:api-key
+   ```
+   This starts the production server and verifies `/api/status` reports `aiAvailable: true`.
+
+
 ## 🌐 Production Deployment
 
 This project is configured for seamless deployment to **Render**, **Vercel**, or any Node.js environment.

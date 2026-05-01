@@ -12,7 +12,8 @@
     "deploy:render": "npm run build && echo 'Deploy with NODE_ENV=production npx tsx server.ts and add GEMINI_API_KEY to your host environment'",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "build:gh-pages": "vite build --base=/neuromind-anhb2217/"
+    "build:gh-pages": "vite build --base=/neuromind-anhb2217/",
+    "test:api-key": "bash scripts/smoke-test-api.sh"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
