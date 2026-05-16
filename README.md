@@ -1,11 +1,12 @@
 # 🧠 NeuroMind (ANHB2217 Master Atlas)
 
-NeuroMind helps ANHB2217 students study faster with practical workbooks, lesion logic, quick simulations, atlas review, and backend-powered tutor explanations.
+NeuroMind helps ANHB2217 students study faster with integrated practical training, workbook-style revision, lesion logic, quick simulations, atlas review, and backend-powered tutor explanations.
 
 ## 🚀 Soft Launch Status
 
 - **Dashboard:** Live and functioning as the high-yield overview.
-- **Practical Builder v5:** Main ANHB2217 practical trainer with station-style revision, cranial nerves, pathway logic, progress tracking, and review questions.
+- **React Practical Trainer:** Integrated app module with 8 practical stations, target checklists, red/amber/green confidence ratings, pathways, cranial nerves, local progress, and mocktical questions.
+- **Practical Builder v5:** Image-rich standalone ANHB2217 practical trainer retained as the fallback/original workbook.
 - **Lab 5 Workbook:** Focused spinal cord workbook for tract logic and lesion localisation.
 - **Workbook Hub:** Static workbook launcher at `/workbooks/`.
 - **Feedback:** We're currently collecting feedback to improve the platform.
@@ -18,7 +19,7 @@ When deployed to GitHub Pages, these paths are expected:
 - `/neuromind-anhb2217/workbooks/neuroanatomy-builder-v5.html`
 - `/neuromind-anhb2217/workbooks/lab5-spinal-cord-workbook.html`
 
-Source workbook files live in `public/workbooks/`. Vite copies them into `dist/workbooks/` during build.
+Source workbook files live in `public/workbooks/`. Vite copies them into `dist/workbooks/` during build. The React Practical Trainer source lives in `app/practicalTrainerData.ts` and `components/PracticalTrainer.tsx`.
 
 ### We want your feedback!
 Help us refine NeuroMind before the first public release. Ask yourself:
@@ -63,7 +64,7 @@ This project supports two deployment modes:
 
 ### GitHub Pages static deployment
 
-GitHub Pages serves the atlas UI and workbook assets. It does **not** receive provider API keys. Browser bundles must not contain `GEMINI_API_KEY`, `VITE_GEMINI_API_KEY`, GitHub tokens, OpenRouter keys, or other private provider credentials.
+GitHub Pages serves the atlas UI, React Practical Trainer, and workbook assets. It does **not** receive provider API keys. Browser bundles must not contain `GEMINI_API_KEY`, `VITE_GEMINI_API_KEY`, GitHub tokens, OpenRouter keys, or other private provider credentials.
 
 The GitHub Pages workflow builds with:
 
@@ -95,8 +96,8 @@ The included `render.yaml` automates setup. Connect the repository to Render and
 
 ## 🎯 Next Build Targets
 
-1. Convert Practical Builder v5 from standalone HTML into shared React data/components.
-2. Add shared progress state across workbooks and atlas modules.
-3. Add mock practical mode inside the main React app.
+1. Add image panels or hosted station images to the React Practical Trainer.
+2. Share progress state across workbooks and atlas modules.
+3. Add timed mock practical mode inside the main React app.
 4. Expand structured course data for cortex, thalamus, cerebellum, basal ganglia, hypothalamus, and limbic system.
 5. Add more structured tutor feedback after wrong quiz answers.
