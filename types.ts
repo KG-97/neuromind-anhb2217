@@ -1,5 +1,6 @@
 export enum AtlasRoute {
   HOME = 'HOME',
+  PRACTICAL = 'PRACTICAL',
   NEURON_LAB = 'NEURON_LAB',
   ELECTRO = 'ELECTRO',
   ANATOMY = 'ANATOMY',
