@@ -1,9 +1,10 @@
-import { Activity, Brain, GraduationCap, House, Zap } from 'lucide-react';
+import { Activity, Brain, GraduationCap, House, ListChecks, Zap } from 'lucide-react';
 import React from 'react';
 import StudyHub from '../components/StudyHub';
 import ActionPotentialLab from '../components/ActionPotentialLab';
 import BrainAtlas from '../components/BrainAtlas';
 import AITutor from '../components/AITutor';
+import PracticalTrainer from '../components/PracticalTrainer';
 import { AtlasRoute } from '../types';
 import { NeuronLabModulePage } from '../modules/neuron-lab';
 
@@ -22,6 +23,13 @@ export const atlasRouteRegistry: AtlasRouteConfig[] = [
     mobileLabel: 'Dashboard',
     icon: House,
     render: setRoute => <StudyHub onNavigate={setRoute} />,
+  },
+  {
+    route: AtlasRoute.PRACTICAL,
+    label: 'Practicals',
+    mobileLabel: 'Practicals',
+    icon: ListChecks,
+    render: () => <PracticalTrainer />,
   },
   {
     route: AtlasRoute.NEURON_LAB,

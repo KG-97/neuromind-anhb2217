@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brain, Activity, Zap, GraduationCap, ExternalLink, BookOpen } from 'lucide-react';
+import { Brain, Activity, Zap, GraduationCap, ExternalLink, BookOpen, ListChecks } from 'lucide-react';
 import { Tab } from '../types';
 import { primaryWorkbook, workbookHubHref, workbookRegistry } from '../app/workbooks';
 
@@ -56,18 +56,18 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
       label: '30-minute rescue sprint',
       totalTime: '10 + 10 + 10 mins',
       steps: [
-        `Open ${primaryWorkbook.shortTitle} and complete one station without notes.`,
+        'Open the React Practical Trainer and complete one station target checklist without notes.',
         'Open Neuron Lab to connect neuron structure with depolarisation, repolarisation, and refractory periods in one flow.',
-        'Generate 5 tutor questions on your weakest topic and explain each answer aloud.',
+        'Run 5 mocktical questions on your weakest topic and explain each answer aloud.',
       ],
     },
     {
       label: '60-minute consolidation sprint',
       totalTime: '20 + 20 + 20 mins',
       steps: [
-        'Run one practical block, then write a one-page summary from memory before checking notes.',
+        'Run one practical station, then write a one-page summary from memory before checking notes.',
         'Switch to Brain Atlas and identify 6 structures with one clinical correlate for each.',
-        'Finish with 10 questions, then record every error in your correction log.',
+        'Finish with 10 practical trainer questions, then mark red/amber/green station confidence.',
       ],
     },
   ];
@@ -82,20 +82,27 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
               Practical-first launch
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mt-4 leading-tight">
-              Start with the practical builder, then use the atlas and tutor to clean up weak spots.
+              Start with the integrated practical trainer, then use the atlas and tutor to clean up weak spots.
             </h2>
             <p className="mt-4 text-slate-600 text-lg leading-relaxed">
-              NeuroMind works best as a study hub, not a random pile of tabs. The fastest path is simple:
-              practical stations first, simulations second, targeted explanations third.
+              NeuroMind now has the first React migration of the v5 practical builder: stations, target checklists,
+              mocktical questions, cranial nerves, pathways, and progress tracking inside the main app.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                onClick={() => onNavigate(Tab.PRACTICAL)}
+                className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Open React Practical Trainer
+                <ListChecks size={16} />
+              </button>
               <a
                 href={primaryWorkbook.href}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-5 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors"
               >
-                Open {primaryWorkbook.shortTitle}
+                Open image-rich v5
                 <ExternalLink size={16} />
               </a>
               <a
@@ -107,27 +114,21 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
                 Browse workbooks
                 <BookOpen size={16} />
               </a>
-              <button
-                onClick={() => onNavigate(Tab.TUTOR)}
-                className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-5 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors"
-              >
-                Open tutor
-              </button>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 min-w-[260px]">
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <p className="text-2xl font-bold text-slate-900">2</p>
-              <p className="text-sm text-slate-500 mt-1">Workbooks ready</p>
-            </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
               <p className="text-2xl font-bold text-slate-900">8</p>
-              <p className="text-sm text-slate-500 mt-1">Practical stations</p>
+              <p className="text-sm text-slate-500 mt-1">React stations</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
               <p className="text-2xl font-bold text-slate-900">12</p>
               <p className="text-sm text-slate-500 mt-1">Cranial nerves</p>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+              <p className="text-2xl font-bold text-slate-900">4</p>
+              <p className="text-sm text-slate-500 mt-1">Pathway maps</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
               <p className="text-2xl font-bold text-slate-900">Safe</p>
@@ -138,6 +139,27 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <article className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <span className="inline-flex bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                Integrated module
+              </span>
+              <h3 className="text-xl font-bold text-slate-900 mt-3">React Practical Trainer</h3>
+            </div>
+            <ListChecks className="text-blue-600" size={24} />
+          </div>
+          <p className="text-slate-600 mt-3 text-sm leading-relaxed">
+            The structured app version of Practical Builder v5 with stations, target checklists, mock questions, cranial nerves, pathways, and local progress.
+          </p>
+          <button
+            onClick={() => onNavigate(Tab.PRACTICAL)}
+            className="mt-5 inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 transition-colors"
+          >
+            Open module
+          </button>
+        </article>
+
         {workbookRegistry.map(workbook => (
           <article key={workbook.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-start justify-between gap-4">
