@@ -24,12 +24,13 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Build
+      - name: Build static site
         run: npm run build:gh-pages
-        env:
-          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
-          VITE_GITHUB_TOKEN: ${{ secrets.VITE_GITHUB_TOKEN }}
-          VITE_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      - name: Verify workbook artifacts
+        run: |
+          test -f dist/workbooks/neuroanatomy-builder-v5.html
+          test -f dist/workbooks/lab5-spinal-cord-workbook.html
+          test -f dist/workbooks/index.html
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
