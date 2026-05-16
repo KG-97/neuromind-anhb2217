@@ -26,10 +26,22 @@ const emptyProgress: PracticalProgress = {
   questionStats: {},
 };
 
+function normalizeProgress(raw: unknown): PracticalProgress {
+  if (!raw || typeof raw !== 'object') return emptyProgress;
+
+  const parsed = raw as Partial<PracticalProgress>;
+
+  return {
+    stationRatings: parsed.stationRatings && typeof parsed.stationRatings === 'object' ? parsed.stationRatings : {},
+    targetChecks: parsed.targetChecks && typeof parsed.targetChecks === 'object' ? parsed.targetChecks : {},
+    questionStats: parsed.questionStats && typeof parsed.questionStats === 'object' ? parsed.questionStats : {},
+  };
+}
+
 function loadProgress(): PracticalProgress {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? { ...emptyProgress, ...JSON.parse(raw) } : emptyProgress;
+    return raw ? normalizeProgress(JSON.parse(raw)) : emptyProgress;
   } catch {
     return emptyProgress;
   }
@@ -64,8 +76,9 @@ const PracticalTrainer: React.FC = () => {
     );
     const greenStations = practicalStations.filter(station => progress.stationRatings[station.id] === 'green').length;
     const redStations = practicalStations.filter(station => progress.stationRatings[station.id] === 'red').length;
-    const questionAttempts = Object.values(progress.questionStats).reduce((sum, stat) => sum + stat.attempts, 0);
-    const questionCorrect = Object.values(progress.questionStats).reduce((sum, stat) => sum + stat.correct, 0);
+    const questionStats = Object.values(progress.questionStats) as Array<{ attempts: number; correct: number }>;
+    const questionAttempts = questionStats.reduce((sum, stat) => sum + stat.attempts, 0);
+    const questionCorrect = questionStats.reduce((sum, stat) => sum + stat.correct, 0);
 
     return {
       totalTargets,
