@@ -1,12 +1,24 @@
 # 🧠 NeuroMind (ANHB2217 Master Atlas)
 
-NeuroMind helps ANHB2217 students study faster with workbook-style revision, lesion logic, quick simulations, and AI explanations.
+NeuroMind helps ANHB2217 students study faster with practical workbooks, lesion logic, quick simulations, atlas review, and backend-powered tutor explanations.
 
 ## 🚀 Soft Launch Status
 
 - **Dashboard:** Live and functioning as the high-yield overview.
-- **Lab 5 Workbook:** The first workbook (Neurons & Action Potentials) is linked directly on the dashboard.
+- **Practical Builder v5:** Main ANHB2217 practical trainer with station-style revision, cranial nerves, pathway logic, progress tracking, and review questions.
+- **Lab 5 Workbook:** Focused spinal cord workbook for tract logic and lesion localisation.
+- **Workbook Hub:** Static workbook launcher at `/workbooks/`.
 - **Feedback:** We're currently collecting feedback to improve the platform.
+
+### Live workbook paths
+
+When deployed to GitHub Pages, these paths are expected:
+
+- `/neuromind-anhb2217/workbooks/`
+- `/neuromind-anhb2217/workbooks/neuroanatomy-builder-v5.html`
+- `/neuromind-anhb2217/workbooks/lab5-spinal-cord-workbook.html`
+
+Source workbook files live in `public/workbooks/`. Vite copies them into `dist/workbooks/` during build.
 
 ### We want your feedback!
 Help us refine NeuroMind before the first public release. Ask yourself:
@@ -23,7 +35,7 @@ Share your thoughts with us at [feedback@neuromind.app](mailto:feedback@neuromin
    npm install
    ```
 
-2. **Environment Setup:**
+2. **Environment Setup for backend AI features:**
    Create a `.env` file in the root directory:
    ```env
    GEMINI_API_KEY=your_api_key_here
@@ -34,40 +46,57 @@ Share your thoughts with us at [feedback@neuromind.app](mailto:feedback@neuromin
    npm run dev
    ```
 
-3. **Run API Key Smoke Test (recommended before deploy):**
+4. **Run API Key Smoke Test:**
    ```bash
    GEMINI_API_KEY=your_api_key_here npm run test:api-key
    ```
    This starts the production server and verifies `/api/status` reports `aiAvailable: true`.
 
+5. **Build static GitHub Pages bundle:**
+   ```bash
+   npm run build:gh-pages
+   ```
 
 ## 🌐 Production Deployment
 
-This project is configured for seamless deployment to **Render**, **Vercel**, or any Node.js environment.
+This project supports two deployment modes:
 
-### Deployment Steps:
-1. **Build the Application:**
-   ```bash
-   npm run build
-   ```
-2. **Start Production Server:**
-   ```bash
-   NODE_ENV=production npx tsx server.ts
-   ```
+### GitHub Pages static deployment
 
-### GitHub Pages & Static Hosting
-This repository is a full-stack app. The static GitHub Pages version can serve the atlas UI, but AI content generation and image generation require the Node.js server and `GEMINI_API_KEY`.
+GitHub Pages serves the atlas UI and workbook assets. It does **not** receive provider API keys. Browser bundles must not contain `GEMINI_API_KEY`, `VITE_GEMINI_API_KEY`, GitHub tokens, OpenRouter keys, or other private provider credentials.
 
-If you want the static bundle to forward AI calls to a hosted backend, build with an external API base URL:
+The GitHub Pages workflow builds with:
+
+```bash
+npm run build:gh-pages
+```
+
+and verifies these files exist:
+
+```bash
+test -f dist/workbooks/neuroanatomy-builder-v5.html
+test -f dist/workbooks/lab5-spinal-cord-workbook.html
+test -f dist/workbooks/index.html
+```
+
+### Backend deployment for tutor features
+
+AI generation requires the Node server and a server-side `GEMINI_API_KEY`. Deploy the server to Render, Vercel, or another Node host, then build the frontend with an external API base URL:
+
 ```bash
 VITE_API_BASE_URL=https://your-deployed-backend-url npm run build:gh-pages
 ```
 
-### Render Deployment:
-The included `render.yaml` automates the setup. Simply connect your Git repository to Render, and it will handle the build and start commands automatically. **Important:** Remember to add your `GEMINI_API_KEY` to the Environment Variables in the Render dashboard.
+The frontend calls `/api/generate` through that backend. It does not call Gemini, OpenRouter, or GitHub Models directly.
+
+### Render Deployment
+
+The included `render.yaml` automates setup. Connect the repository to Render and add `GEMINI_API_KEY` to the Render environment variables.
 
 ## 🎯 Next Build Targets
-1. Action potentials workbook (improvements to the current simulation)
-2. Neuroanatomy workbook
-3. Better progress tracking across modules
-4. More structured AI help after wrong quiz answers
+
+1. Convert Practical Builder v5 from standalone HTML into shared React data/components.
+2. Add shared progress state across workbooks and atlas modules.
+3. Add mock practical mode inside the main React app.
+4. Expand structured course data for cortex, thalamus, cerebellum, basal ganglia, hypothalamus, and limbic system.
+5. Add more structured tutor feedback after wrong quiz answers.

@@ -1,12 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Activity, Zap, Brain, GraduationCap, Menu, X, House, Download } from 'lucide-react';
-import { AtlasRoute, Tab } from './types';
+import { Brain, Menu, X } from 'lucide-react';
+import { AtlasRoute } from './types';
 import { atlasDefaultRoute, atlasRouteRegistry } from './app/atlasRoutes';
-import StudyHub from './components/StudyHub';
-import NeuronLab from './components/NeuronLab';
-import ActionPotentialLab from './components/ActionPotentialLab';
-import BrainAtlas from './components/BrainAtlas';
-import AITutor from './components/AITutor';
+import { primaryWorkbook, workbookHubHref } from './app/workbooks';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -86,7 +82,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1 className="text-lg font-bold text-slate-800 leading-tight">NeuroMind</h1>
-              <p className="text-xs text-slate-500 font-medium tracking-wide">ATLAS V2 + NEURONLAB</p>
+              <p className="text-xs text-slate-500 font-medium tracking-wide">ATLAS V2 + PRACTICALS</p>
             </div>
           </div>
 
@@ -111,16 +107,26 @@ const App: React.FC = () => {
       </main>
 
       <footer className="bg-white border-t border-slate-200 py-6 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 text-center space-y-2">
+        <div className="max-w-7xl mx-auto px-4 text-center space-y-3">
           <p className="text-slate-400 text-sm">© {new Date().getFullYear()} ANHB2217 Study Tool. Atlas-integrated.</p>
-          <a
-            href={`${import.meta.env.BASE_URL}workbooks/lab5-spinal-cord-workbook.html`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm font-medium text-blue-600 hover:text-blue-800"
-          >
-            Open the Lab 5 spinal cord workbook
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={primaryWorkbook.href}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-blue-600 hover:text-blue-800"
+            >
+              Open {primaryWorkbook.shortTitle}
+            </a>
+            <a
+              href={workbookHubHref}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900"
+            >
+              Browse all workbooks
+            </a>
+          </div>
         </div>
       </footer>
     </div>

@@ -3,70 +3,87 @@
 ## Before deploy
 
 - [ ] `npm install`
-- [ ] `npm run typecheck`
+- [ ] `npm run lint`
 - [ ] `npm run build`
-- [ ] `.env.local` contains `VITE_GEMINI_API_KEY`
 - [ ] workbook files live in `public/workbooks/`
-- [ ] main dashboard links open correctly
-- [ ] mobile navigation works on the Lab 5 workbook
-- [ ] AI tutor fails gracefully when no API key is present
+- [ ] `public/workbooks/index.html` exists
+- [ ] dashboard links open the Practical Builder v5 and workbook hub correctly
+- [ ] mobile navigation works
+- [ ] AI tutor fails gracefully when no backend URL is configured
+- [ ] no provider API keys are injected into static GitHub Pages builds
+
+## Workbook artifact checks
+
+GitHub Pages builds must contain:
+
+```bash
+test -f dist/workbooks/neuroanatomy-builder-v5.html
+test -f dist/workbooks/lab5-spinal-cord-workbook.html
+test -f dist/workbooks/index.html
+```
+
+Expected deployed paths:
+
+- `/neuromind-anhb2217/workbooks/`
+- `/neuromind-anhb2217/workbooks/neuroanatomy-builder-v5.html`
+- `/neuromind-anhb2217/workbooks/lab5-spinal-cord-workbook.html`
 
 ## Recommended deployment targets
 
-### Vercel
-Good default for the React app. Minimal setup and easy previews.
+### GitHub Pages
 
-#### Live deployment (CLI)
-
-```bash
-npm install
-npm run typecheck
-npm run build
-vercel login
-npm run deploy:vercel
-```
-
-This repo now defaults Vite `base` to `/` for Vercel/Netlify deployments.
-If you need GitHub Pages pathing instead, use:
+Use GitHub Pages for the static atlas UI and workbook assets.
 
 ```bash
 npm run build:gh-pages
 ```
 
-If you already have `VERCEL_TOKEN` in your environment, you can skip `vercel login` and run non-interactively:
+Static builds must not receive `GEMINI_API_KEY`, `VITE_GEMINI_API_KEY`, `VITE_GITHUB_TOKEN`, `VITE_OPENROUTER_API_KEY`, or any other private provider token. Browser bundles are public artifacts.
+
+### Backend deployment for AI features
+
+AI tutor generation requires the Node server. Put `GEMINI_API_KEY` only in the backend host environment.
+
+If the static frontend should call a hosted backend, build it with:
 
 ```bash
-npx vercel deploy --prod --yes --token "$VERCEL_TOKEN"
+VITE_API_BASE_URL=https://your-deployed-backend-url npm run build:gh-pages
 ```
 
-### Netlify
-Also fine for static hosting.
+The frontend should call the backend `/api/generate` endpoint, not provider APIs directly.
 
-### GitHub Pages
-Possible, but slightly more annoying if the Vite base path changes. Use only if you specifically want repo-native hosting.
+### Vercel or Render
+
+Good targets for the Node-backed app. Add `GEMINI_API_KEY` to the host environment variables and run:
+
+```bash
+npm install
+npm run build
+NODE_ENV=production npx tsx server.ts
+```
 
 ## Release sanity checks
 
 After deployment, verify:
 
 1. dashboard loads
-2. workbook link opens
-3. AI tutor explains a concept when the key is configured
-4. build contains the workbook HTML under `/workbooks/`
-5. the app works on mobile without the nav exploding into modern art
+2. Practical Builder v5 opens from the dashboard
+3. workbook hub opens at `/workbooks/`
+4. Lab 5 workbook opens from the workbook hub
+5. AI tutor gives a clear backend configuration error on static-only deployments
+6. AI tutor works when a backend is deployed and `VITE_API_BASE_URL` is configured
+7. mobile navigation works without the nav turning into layout confetti
 
+## Release gate
 
-## Release gate (latest reassessment)
+Latest formal readiness check before this update: **April 22, 2026**.
 
-Latest formal readiness check: **April 22, 2026**.
-
-- Status: **Ready to deploy** (typecheck/build/workbook artifact checks passed)
-- Detailed report: [`docs/RELEASE_REASSESSMENT_2026-04-22.md`](./RELEASE_REASSESSMENT_2026-04-22.md)
-
-If this date gets stale, re-run:
+After any workbook or deployment change, re-run:
 
 ```bash
-npm run typecheck
+npm run lint
 npm run build
+test -f dist/workbooks/neuroanatomy-builder-v5.html
 test -f dist/workbooks/lab5-spinal-cord-workbook.html
+test -f dist/workbooks/index.html
 ```
