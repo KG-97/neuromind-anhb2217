@@ -1,6 +1,7 @@
 import React from 'react';
-import { Brain, Activity, Zap, GraduationCap, ExternalLink } from 'lucide-react';
+import { Brain, Activity, Zap, GraduationCap, ExternalLink, BookOpen } from 'lucide-react';
 import { Tab } from '../types';
+import { primaryWorkbook, workbookHubHref, workbookRegistry } from '../app/workbooks';
 
 interface StudyHubProps {
   onNavigate: (tab: Tab) => void;
@@ -55,18 +56,18 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
       label: '30-minute rescue sprint',
       totalTime: '10 + 10 + 10 mins',
       steps: [
-        'Open the Lab 5 workbook and complete one lesion localisation run without notes.',
+        `Open ${primaryWorkbook.shortTitle} and complete one station without notes.`,
         'Open Neuron Lab to connect neuron structure with depolarisation, repolarisation, and refractory periods in one flow.',
-        'Generate 5 AI questions on your weakest topic and explain each answer aloud.',
+        'Generate 5 tutor questions on your weakest topic and explain each answer aloud.',
       ],
     },
     {
       label: '60-minute consolidation sprint',
       totalTime: '20 + 20 + 20 mins',
       steps: [
-        'Run one workbook block, then write a one-page summary from memory before checking notes.',
+        'Run one practical block, then write a one-page summary from memory before checking notes.',
         'Switch to Brain Atlas and identify 6 structures with one clinical correlate for each.',
-        'Finish with 10 AI questions, then record every error in your correction log.',
+        'Finish with 10 questions, then record every error in your correction log.',
       ],
     },
   ];
@@ -78,62 +79,103 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em]">
               <Brain size={14} />
-              Workbook-first launch
+              Practical-first launch
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mt-4 leading-tight">
-              Start with the spinal cord workbook, then use the tools to clean up weak spots.
+              Start with the practical builder, then use the atlas and tutor to clean up weak spots.
             </h2>
             <p className="mt-4 text-slate-600 text-lg leading-relaxed">
               NeuroMind works best as a study hub, not a random pile of tabs. The fastest path is simple:
-              workbook first, simulations second, AI help third.
+              practical stations first, simulations second, targeted explanations third.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a
-                href={`${import.meta.env.BASE_URL}workbooks/lab5-spinal-cord-workbook.html`}
+                href={primaryWorkbook.href}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
               >
-                Open Lab 5 workbook
+                Open {primaryWorkbook.shortTitle}
                 <ExternalLink size={16} />
+              </a>
+              <a
+                href={workbookHubHref}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-5 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors"
+              >
+                Browse workbooks
+                <BookOpen size={16} />
               </a>
               <button
                 onClick={() => onNavigate(Tab.TUTOR)}
                 className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-5 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors"
               >
-                Open AI tutor
+                Open tutor
               </button>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 min-w-[260px]">
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <p className="text-2xl font-bold text-slate-900">1</p>
-              <p className="text-sm text-slate-500 mt-1">Workbook ready to use</p>
-            </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <p className="text-2xl font-bold text-slate-900">5</p>
-              <p className="text-sm text-slate-500 mt-1">Interactive support tools</p>
+              <p className="text-2xl font-bold text-slate-900">2</p>
+              <p className="text-sm text-slate-500 mt-1">Workbooks ready</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
               <p className="text-2xl font-bold text-slate-900">8</p>
-              <p className="text-sm text-slate-500 mt-1">Quiz questions in Lab 5</p>
+              <p className="text-sm text-slate-500 mt-1">Practical stations</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <p className="text-2xl font-bold text-slate-900">Powered</p>
-              <p className="text-sm text-slate-500 mt-1">Gemini 2.5 AI</p>
+              <p className="text-2xl font-bold text-slate-900">12</p>
+              <p className="text-sm text-slate-500 mt-1">Cranial nerves</p>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+              <p className="text-2xl font-bold text-slate-900">Safe</p>
+              <p className="text-sm text-slate-500 mt-1">No static AI secrets</p>
             </div>
           </div>
         </div>
       </section>
 
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {workbookRegistry.map(workbook => (
+          <article key={workbook.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <span className="inline-flex bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                  {workbook.badge}
+                </span>
+                <h3 className="text-xl font-bold text-slate-900 mt-3">{workbook.title}</h3>
+              </div>
+              <BookOpen className="text-blue-600" size={24} />
+            </div>
+            <p className="text-slate-600 mt-3 text-sm leading-relaxed">{workbook.description}</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {workbook.stats.map(stat => (
+                <span key={stat} className="text-xs font-medium bg-slate-100 text-slate-600 rounded-full px-3 py-1">
+                  {stat}
+                </span>
+              ))}
+            </div>
+            <a
+              href={workbook.href}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 transition-colors"
+            >
+              Open workbook
+              <ExternalLink size={16} />
+            </a>
+          </article>
+        ))}
+      </section>
+
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {[
-          { title: 'Neuron Model', description: 'Review structures and function.', tab: Tab.NEURON_LAB, icon: Activity },
           { title: 'Neuron Lab', description: 'Run the combined neuron structure + electrophysiology flow.', tab: Tab.NEURON_LAB, icon: Activity },
           { title: 'Electrophysiology Lab', description: 'Replay the action potential sequence.', tab: Tab.ELECTRO, icon: Zap },
           { title: 'Brain Atlas', description: 'Revise anatomy and clinical correlates.', tab: Tab.ANATOMY, icon: Brain },
-          { title: 'AI Tutor', description: 'Generate a question or explain a concept.', tab: Tab.TUTOR, icon: GraduationCap },
+          { title: 'Tutor', description: 'Generate a question or explain a concept.', tab: Tab.TUTOR, icon: GraduationCap },
         ].map(({ title, description, tab, icon: Icon }) => (
           <article key={title} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center mb-4">
@@ -192,20 +234,6 @@ const StudyHub: React.FC<StudyHubProps> = ({ onNavigate }) => {
                 </ol>
               </div>
             ))}
-          </div>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <button
-              onClick={() => onNavigate(Tab.NEURON_LAB)}
-              className="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 transition-colors"
-            >
-              After workbook: open Neuron Lab
-            </button>
-            <button
-              onClick={() => onNavigate(Tab.ANATOMY)}
-              className="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 transition-colors"
-            >
-              Jump to brain atlas
-            </button>
           </div>
         </article>
       </section>
