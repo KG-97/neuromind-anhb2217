@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { apiPost } from '../services/apiClient';
-import PathwayVisualizer from './PathwayVisualizer';
 
 const tracts = {
   'dcml': { 
