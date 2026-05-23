@@ -11,7 +11,7 @@ const vignettes: ClinicalVignette[] = [
 ];
 const flashcards: Flashcard[] = practicalPathways.map((pathway) => ({ id: pathway.name, front: pathway.name, back: pathway.logic, topic: pathway.modality }));
 
-const qid = (i: number) => `q-${i}`;
+const qid = (q: any) => q.prompt;
 
 type Action =
   | { type: 'toggleTarget'; id: string }
@@ -89,7 +89,7 @@ const PracticalTrainer: React.FC = () => {
 
     {mode === 'quiz' && <section className='border rounded p-4'>
       <p>{question.prompt}</p>
-      {question.options.map((option, index) => <button key={option} aria-label={`option-${index}`} disabled={!!selectedAnswer} onClick={() => { setSelectedAnswer(option); dispatch({ type: 'answerQuestion', qid: qid(questionIndex), correct: option === question.answer }); }} className='block w-full text-left border rounded px-3 py-2 mt-2'>{option}</button>)}
+      {question.options.map((option, index) => <button key={option} aria-label={`option-${index}`} disabled={!!selectedAnswer} onClick={() => { setSelectedAnswer(option); dispatch({ type: 'answerQuestion', qid: qid(question), correct: option === question.answer }); }} className='block w-full text-left border rounded px-3 py-2 mt-2'>{option}</button>)}
       {selectedAnswer && <p className='mt-3'>Answer: {question.answer}</p>}
       <button className='mt-2 border rounded px-3 py-1' onClick={() => { setSelectedAnswer(null); setQuestionIndex((i) => i + 1); }}>Next</button>
     </section>}
@@ -97,6 +97,18 @@ const PracticalTrainer: React.FC = () => {
     {mode === 'flashcards' && <section className='border rounded p-4'>
       <div className='cursor-pointer transition-transform duration-500' onClick={() => setFlipped((v) => !v)}>{flipped ? card.back : card.front}</div>
     </section>}
+        {mode === 'pathways' && <section className='border rounded p-4'>
+          <h3 className="font-bold mb-2">Pathways</h3>
+          <p className="text-sm mb-3">Browse sensory and motor pathways.</p>
+          <ul className="space-y-2">
+            {practicalPathways.map((p) => (
+              <li key={p.name} className="border rounded px-3 py-2 hover:bg-blue-50">
+                <strong>{p.name}</strong>
+                <p className="text-xs italic">{p.logic}</p>
+              </li>
+            ))}
+          </ul>
+        </section>}
 
     {mode === 'lesions' && <section className='space-y-2'>{vignettes.map((v) => <details key={v.id} className='border rounded p-3'><summary>{v.prompt}</summary><p className='text-sm mt-2'>Hint: {v.hint}</p><p className='text-sm mt-1'><b>Localization:</b> {v.answer}</p></details>)}</section>}
 
