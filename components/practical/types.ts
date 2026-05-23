@@ -1,0 +1,13 @@
+import { PracticalQuestion, practicalCranialNerves, practicalPathways, practicalStations } from '../../app/practicalTrainerData';
+export type Mode = 'stations' | 'quiz' | 'pathways' | 'cranial' | 'flashcards' | 'lesions' | 'dashboard';
+export type StationRating = 'red' | 'amber' | 'green';
+export type LeitnerBox = 1 | 2 | 3 | 4 | 5;
+export type ThemeMode = 'light' | 'dark' | 'high-contrast';
+export type QuestionStat = { attempts: number; correct: number; wrong: number; lastSeenAt?: string; leitnerBox: LeitnerBox; dueDate: string };
+export type PracticalProgress = { stationRatings: Record<string, StationRating>; targetChecks: Record<string, boolean>; questionStats: Record<string, QuestionStat>; streak: { lastCheckIn?: string; days: number }; sessions: Array<{ start: string; end?: string; durationSeconds: number }>; };
+export type Station = (typeof practicalStations)[number];
+export type Pathway = (typeof practicalPathways)[number];
+export type CranialNerve = (typeof practicalCranialNerves)[number];
+export type ClinicalVignette = { id: string; prompt: string; answer: string; hint: string };
+export type Flashcard = { id: string; front: string; back: string; topic: string };
+export type PracticalQuestionWithId = PracticalQuestion & { id: string };

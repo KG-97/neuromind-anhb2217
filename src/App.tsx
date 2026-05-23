@@ -3,19 +3,29 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Menu, X, Search, Command } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import Dashboard from './components/Dashboard';
-import Cortex from './components/Cortex';
-import Spinal from './components/Spinal';
-import Cranial from './components/Cranial';
-import Senses from './components/Senses';
-import Brainstem from './components/Brainstem';
-import Trainer from './components/Trainer';
-import NeuronLab from './components/NeuronLab';
-import Subcortical from './components/Subcortical';
+
+
+
+
+
+
+
+
+
 import AITutor from './components/AITutor';
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const Cortex = lazy(() => import('./components/Cortex'));
+const Spinal = lazy(() => import('./components/Spinal'));
+const Cranial = lazy(() => import('./components/Cranial'));
+const Senses = lazy(() => import('./components/Senses'));
+const Brainstem = lazy(() => import('./components/Brainstem'));
+const Trainer = lazy(() => import('./components/Trainer'));
+const NeuronLab = lazy(() => import('./components/NeuronLab'));
+const Subcortical = lazy(() => import('./components/Subcortical'));
+const StudyAnalytics = lazy(() => import('./components/StudyAnalytics'));
 
 export default function App() {
     const [activeTab, setActiveTab] = useState<string>(() => localStorage.getItem('nm_activeTab') || 'dashboard');
@@ -140,6 +150,8 @@ export default function App() {
   }, [searchQuery]);
 
   return (
+    <>
+    <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-black text-white px-3 py-2 rounded">Skip to content</a>
     <div className="flex flex-col md:flex-row h-screen bg-zinc-950 text-zinc-100 overflow-hidden relative font-sans selection:bg-violet-500/30">
       {isStaticGitHub && (
         <div className="absolute inset-x-0 top-0 z-40 bg-amber-500/10 border-b border-amber-400/20 text-amber-100 text-sm px-4 py-3 backdrop-blur-sm">
@@ -274,8 +286,8 @@ export default function App() {
         </nav>
       </aside>
 
-      <main className="flex-1 overflow-y-auto p-6 md:p-10 z-10 relative custom-scrollbar section-bg">
-        <AnimatePresence mode="wait">
+      <main id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto p-6 md:p-10 z-10 relative custom-scrollbar section-bg focus:outline-none">
+        <Suspense fallback={<div className="animate-pulse text-zinc-400">Loading module...</div>}><AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
@@ -284,7 +296,7 @@ export default function App() {
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="min-h-full"
           >
-            {activeTab === 'dashboard' && <Dashboard />}
+            {activeTab === 'dashboard' && <><StudyAnalytics /><Dashboard /></>}
             {activeTab === 'cortex' && <Cortex />}
             { activeTab === 'subcortical' && <Subcortical initialId={deepLinkId} /> }
             { activeTab === 'spinal' && <Spinal /> }
@@ -294,11 +306,12 @@ export default function App() {
             { activeTab === 'trainer' && <Trainer /> }
             { activeTab === 'neuron' && <NeuronLab /> }
           </motion.div>
-        </AnimatePresence>
+        </AnimatePresence></Suspense>
       </main>
 
       {/* Floating AI Tutor Widget */}
       <AITutor aiAvailable={aiAvailable} />
     </div>
+    </>
   );
 }

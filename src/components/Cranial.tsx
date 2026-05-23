@@ -19,6 +19,7 @@ const cns = {
 
 export default function Cranial({ initialId }: { initialId?: number }) {
   const [currentCNId, setCurrentCNId] = useState<keyof typeof cns>(1);
+  const [showComparison, setShowComparison] = useState(false);
   const [aiResponse, setAiResponse] = useState('');
   
   useEffect(() => {
@@ -189,6 +190,8 @@ export default function Cranial({ initialId }: { initialId?: number }) {
     >
       <motion.h2 variants={itemVariants} className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-400 mb-3 tracking-tight">Cranial Nerves</motion.h2>
       <motion.p variants={itemVariants} className="text-zinc-400 mb-6 text-lg">Select any cranial nerve from the interactive grid below to view its specific functions, primary location, and fiber type.</motion.p>
+      <button onClick={() => setShowComparison((v) => !v)} className='mb-6 px-3 py-2 rounded border border-white/20'>{showComparison ? 'Hide' : 'Show'} comparison table</button>
+      {showComparison && <div className='overflow-auto mb-6 rounded-xl border border-white/10'><table className='w-full text-sm'><thead><tr><th className='p-2 text-left'>CN</th><th className='p-2 text-left'>Name</th><th className='p-2 text-left'>Type</th><th className='p-2 text-left'>Function</th><th className='p-2 text-left'>Location</th></tr></thead><tbody>{Object.entries(cns).map(([id, cn]) => <tr key={id} className='border-t border-white/10'><td className='p-2'>{cn.r}</td><td className='p-2'>{cn.n}</td><td className='p-2'>{cn.t}</td><td className='p-2'>{cn.f}</td><td className='p-2'>{cn.l}</td></tr>)}</tbody></table></div>}
 
       {/* Progress Tracker */}
       <motion.div variants={itemVariants} className="mb-8 glass-card rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between">
