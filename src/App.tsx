@@ -22,7 +22,7 @@ const Spinal = lazy(() => import('./components/Spinal'));
 const Cranial = lazy(() => import('./components/Cranial'));
 const Senses = lazy(() => import('./components/Senses'));
 const Brainstem = lazy(() => import('./components/Brainstem'));
-const Trainer = lazy(() => import('./components/Trainer'));
+const Trainer = lazy(() => import('./components/PracticalTrainer'));
 const NeuronLab = lazy(() => import('./components/NeuronLab'));
 const Subcortical = lazy(() => import('./components/Subcortical'));
 const StudyAnalytics = lazy(() => import('./components/StudyAnalytics'));
