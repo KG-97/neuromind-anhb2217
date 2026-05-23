@@ -1,27 +1,109 @@
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
+const STORAGE_KEY = 'neuromind_practical_trainer_v2';
+const SESSIONS_KEY = 'nm_sessions';
+
+interface QuestionStats {
+  attempts: number;
+  correct: number;
+  wrong: number;
+  leitnerBox: number;
+  dueDate?: string;
+  lastSeenAt?: string;
+}
+
+interface Progress {
+  questionStats: Record<string, QuestionStats>;
+  stationRatings?: Record<string, { rating: number; ratedAt?: string }>;
+  streak?: { lastCheckIn?: string; days?: number };
+  targetChecks?: Record<string, boolean>;
+}
+
 type Session = { date: string; minutes: number; module: string; score: number };
 
-const seed: Session[] = [
-  { date: 'Mon', minutes: 35, module: 'Spinal', score: 72 },
-  { date: 'Tue', minutes: 42, module: 'Cranial', score: 78 },
-  { date: 'Wed', minutes: 28, module: 'Cortex', score: 70 },
-  { date: 'Thu', minutes: 50, module: 'Trainer', score: 84 },
-  { date: 'Fri', minutes: 45, module: 'Spinal', score: 80 },
-  { date: 'Sat', minutes: 38, module: 'Cranial', score: 82 },
-];
+function parseProgress(): Progress | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function buildSessions(progress: Progress): Session[] {
+  const qStats = Object.entries(progress.questionStats || {});
+  const stations = Object.entries(progress.stationRatings || {});
+  const seen = new Set<string>();
+  const sessions: Session[] = [];
+
+  // Group by date from lastSeenAt
+  for (const [qid, stats] of qStats) {
+    if (!stats.lastSeenAt || stats.attempts <= 0) continue;
+    const dt = new Date(stats.lastSeenAt);
+    const dateKey = dt.toISOString().slice(0, 10);
+    if (seen.has(dateKey)) continue;
+    seen.add(dateKey);
+    const score = Math.round((stats.correct / stats.attempts) * 100);
+    sessions.push({
+      date: dt.toLocaleDateString('en-US', { weekday: 'short' }),
+      minutes: stats.attempts * 2,
+      module: qid.split(':')[0] || 'General',
+      score,
+    });
+  }
+
+  // Add station rating sessions
+  for (const [sid, rating] of stations) {
+    if (!rating.ratedAt || seen.has(rating.ratedAt)) continue;
+    const dt = new Date(rating.ratedAt);
+    const dateKey = dt.toISOString().slice(0, 10);
+    if (seen.has(dateKey)) continue;
+    seen.add(dateKey);
+    sessions.push({
+      date: dt.toLocaleDateString('en-US', { weekday: 'short' }),
+      minutes: 10,
+      module: sid,
+      score: rating.rating * 20,
+    });
+  }
+
+  // Fallback if no real sessions yet
+  if (sessions.length === 0) {
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const dt = new Date(today);
+      dt.setDate(dt.getDate() - i);
+      sessions.push({
+        date: dt.toLocaleDateString('en-US', { weekday: 'short' }),
+        minutes: 0,
+        module: '—',
+        score: 0,
+      });
+    }
+  }
+
+  return sessions;
+}
 
 export default function StudyAnalytics() {
   const [sessions, setSessions] = useState<Session[]>(() => {
-    try { return JSON.parse(localStorage.getItem('nm_sessions') || 'null') ?? seed; } catch { return seed; }
+    try {
+      const cached = JSON.parse(localStorage.getItem(SESSIONS_KEY) || 'null');
+      if (cached && cached.length > 0) return cached;
+    } catch {}
+    const progress = parseProgress();
+    return progress ? buildSessions(progress) : [];
   });
   const [running, setRunning] = useState(false);
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    localStorage.setItem('nm_sessions', JSON.stringify(sessions));
-  }, [sessions]);
+    const progress = parseProgress();
+    if (progress) {
+      const fresh = buildSessions(progress);
+      setSessions(fresh);
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(fresh));
+    }
+  }, []);
 
   useEffect(() => {
     if (!running) return;
@@ -30,7 +112,7 @@ export default function StudyAnalytics() {
   }, [running]);
 
   const totals = sessions.reduce((acc, s) => ({ minutes: acc.minutes + s.minutes, avg: acc.avg + s.score }), { minutes: 0, avg: 0 });
-  const avgScore = Math.round(totals.avg / sessions.length);
+  const avgScore = sessions.length ? Math.round(totals.avg / sessions.length) : 0;
   const weakAreas = sessions.filter((s) => s.score < 75);
 
   const exportCsv = () => {
@@ -38,8 +120,7 @@ export default function StudyAnalytics() {
     const body = sessions.map((s) => `${s.date},${s.module},${s.minutes},${s.score}`).join('\n');
     const blob = new Blob([header + body], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'neuromind-progress.csv'; a.click(); URL.revokeObjectURL(url);
+    const a = document.createElement('a'); a.href = url; a.download = 'neuromind-progress.csv'; a.click(); URL.revokeObjectURL(url);
   };
 
   return (
