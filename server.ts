@@ -12,6 +12,13 @@ async function startServer() {
   const PORT = Number(process.env.PORT || 3000);
 
   app.use(express.json());
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof SyntaxError && 'body' in err) {
+      res.status(400).json({ error: "Invalid JSON payload passed.", code: "BAD_REQUEST" });
+      return;
+    }
+    next();
+  });
 
   // API routes
   app.post("/api/generate", async (req, res) => {
