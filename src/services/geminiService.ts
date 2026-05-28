@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 // ── Central model constants ──────────────────────────────────────────────────
 const MODELS = {
   text: 'gemini-2.5-flash',
-  image: 'gemini-2.5-flash',
+  image: 'imagen-3.0-generate-002',
 } as const;
 
 const TIMEOUT_MS = 25000;
@@ -70,24 +70,31 @@ export async function generateImage(prompt: string): Promise<string | null> {
   if (!AI_AVAILABLE || !ai) {
     throw new AIError('NO_KEY', 'Gemini API key is not configured. Set GEMINI_API_KEY (or GOOGLE_API_KEY) to enable AI features.');
   }
-  const response = await withTimeout(
-    ai.models.generateContent({
-      model: MODELS.image,
-      contents: { parts: [{ text: prompt }] },
-      config: {
-        imageConfig: { aspectRatio: '16:9', imageSize: '1K' },
-      },
-    }),
-    TIMEOUT_MS
-  );
-  if (response.candidates?.[0]?.content?.parts) {
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) {
-        return `data:image/png;base64,${part.inlineData.data}`;
-      }
+  try {
+    const response = await withTimeout(
+      ai.models.generateImages({
+        model: MODELS.image,
+        prompt: prompt,
+        config: {
+          numberOfImages: 1,
+          aspectRatio: '16:9',
+          outputMimeType: 'image/jpeg',
+        },
+      }),
+      TIMEOUT_MS
+    );
+    if (response.generatedImages?.[0]?.image?.imageBytes) {
+      return `data:image/jpeg;base64,${response.generatedImages[0].image.imageBytes}`;
     }
+    return null;
+  } catch (err) {
+    if (err instanceof AIError) throw err;
+    const msg = (err as Error)?.message || String(err);
+    if (msg.includes('429') || msg.toLowerCase().includes('quota')) {
+      throw new AIError('RATE_LIMIT', 'Gemini rate limit hit. Please wait a moment and try again.');
+    }
+    throw new AIError('UNKNOWN', msg);
   }
-  return null;
 }
 
 export async function generateQuizQuestion(topic: string): Promise<string> {
