@@ -57,6 +57,46 @@ export default function Dashboard() {
       <motion.h2 variants={itemVariants} className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-400 mb-3 tracking-tight">NeuroMind</motion.h2>
       <motion.p variants={itemVariants} className="text-zinc-400 mb-8 text-lg leading-relaxed max-w-3xl">NeuroMind helps ANHB2217 students study faster with workbook-style revision, lesion logic, quick simulations, and AI explanations.</motion.p>
 
+      <motion.div variants={itemVariants} className="glass-card p-8 rounded-2xl relative overflow-hidden mb-8 border border-violet-500/20">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500"></div>
+        <div className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300 bg-cyan-500/10 border border-cyan-400/20 rounded-full px-3 py-1">v11 new</div>
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center gap-6">
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold text-zinc-100 mb-3 flex items-center gap-3">🛡️ PASSFORGE+ Exam Trainer</h3>
+            <p className="text-sm text-zinc-300/80 leading-relaxed mb-4 max-w-2xl">
+              The ultimate ANHB2217 exam preparation suite — with flashcards, timed exams, SAQ self-marking, 
+              lesion localisation lab, visual field trainer, mocktical stations, and 14 content modules. 
+              Everything you need in one standalone tool.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a 
+                href="/workbooks/neuromind-v11-passforge.html" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="glass-button bg-violet-600/90 hover:bg-violet-500 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center border border-violet-500/50"
+              >
+                Launch PASSFORGE+ &rarr;
+              </a>
+              <a 
+                href="/workbooks/neuroanatomy-builder-v5.html" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="glass-button bg-zinc-800/60 hover:bg-zinc-700/80 text-zinc-200 px-6 py-3 rounded-xl font-bold transition-all flex items-center border border-white/10"
+              >
+                Anatomy Builder v5
+              </a>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3 lg:flex-col lg:gap-2 text-xs text-zinc-400">
+            <span className="bg-zinc-900/80 border border-white/5 rounded-lg px-3 py-2">📋 14 modules</span>
+            <span className="bg-zinc-900/80 border border-white/5 rounded-lg px-3 py-2">⏱️ Timed exams</span>
+            <span className="bg-zinc-900/80 border border-white/5 rounded-lg px-3 py-2">✍️ SAQ self-mark</span>
+            <span className="bg-zinc-900/80 border border-white/5 rounded-lg px-3 py-2">🧠 Lesion lab</span>
+            <span className="bg-zinc-900/80 border border-white/5 rounded-lg px-3 py-2">👁️ Visual fields</span>
+          </div>
+        </div>
+      </motion.div>
+
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <div className="glass-card p-6 rounded-2xl flex flex-col justify-center items-center text-center">
           <h3 className="text-lg font-bold text-zinc-100 mb-2">Mastery Progress</h3>
