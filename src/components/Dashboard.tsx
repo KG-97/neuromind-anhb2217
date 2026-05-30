@@ -85,6 +85,14 @@ export default function Dashboard() {
               >
                 Anatomy Builder v5
               </a>
+              <a 
+                href="/workbooks/anhb2217-exam-trainer-v12.html" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="glass-button bg-cyan-600/90 hover:bg-cyan-500 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center border border-cyan-500/50"
+              >
+                📱 Exam Trainer (mobile) &rarr;
+              </a>
             </div>
           </div>
           <div className="flex flex-wrap gap-3 lg:flex-col lg:gap-2 text-xs text-zinc-400">

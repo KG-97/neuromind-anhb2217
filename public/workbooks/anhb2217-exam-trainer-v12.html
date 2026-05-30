@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0b12" />
+<title>NeuroMind PASSFORGE+ · ANHB2217 Exam Trainer</title>
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#0b0b12; --bg2:#13131f; --card:#181826; --card2:#1f1f30;
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+    --txt:#e7e7ef; --mut:#a0a0b4; --mut2:#7a7a90;
+    --acc:#8b5cf6; --acc2:#22d3ee; --good:#34d399; --bad:#f87171; --warn:#fbbf24;
+    --r:16px; --sp:clamp(14px,3.5vw,22px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(1200px 600px at 80% -10%,rgba(139,92,246,.12),transparent 60%),
+               radial-gradient(900px 500px at -10% 110%,rgba(34,211,238,.10),transparent 55%),var(--bg);
+    color:var(--txt); line-height:1.55; min-height:100vh; min-height:100dvh;
+    padding-bottom:calc(78px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 var(--sp);}
+  header.app{
+    position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);
+    background:linear-gradient(180deg,rgba(11,11,18,.92),rgba(11,11,18,.72));
+    border-bottom:1px solid var(--line);
+    padding:calc(10px + env(safe-area-inset-top)) 0 10px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;max-width:760px;margin:0 auto;padding:0 var(--sp);}
+  .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--acc),var(--acc2));
+    display:grid;place-items:center;font-size:18px;flex:none;box-shadow:0 4px 14px rgba(139,92,246,.35);}
+  .brand h1{font-size:1.02rem;margin:0;font-weight:800;letter-spacing:.2px;}
+  .brand .sub{font-size:.66rem;color:var(--mut2);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:1px;}
+  .pill{margin-left:auto;font-size:.62rem;font-weight:800;letter-spacing:.12em;color:#d6c7ff;
+    background:rgba(139,92,246,.16);border:1px solid rgba(139,92,246,.34);border-radius:999px;padding:5px 9px;white-space:nowrap;}
+
+  main{padding-top:18px;}
+  .view{display:none;animation:fade .25s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  h2.title{font-size:1.5rem;margin:.2em 0 .1em;font-weight:800;letter-spacing:-.01em;}
+  p.lead{color:var(--mut);margin:.2em 0 1.1em;font-size:.96rem;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:var(--sp);margin-bottom:14px;}
+  .grid{display:grid;gap:12px;}
+  @media(min-width:560px){.grid.two{grid-template-columns:1fr 1fr;}}
+
+  .mode-card{cursor:pointer;display:flex;gap:14px;align-items:flex-start;transition:transform .12s,border-color .12s,background .12s;}
+  .mode-card:active{transform:scale(.99);}
+  .mode-card:hover{border-color:var(--line2);background:var(--card2);}
+  .mode-ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:none;
+    background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(34,211,238,.16));border:1px solid var(--line);}
+  .mode-card h3{margin:.1em 0 .25em;font-size:1.06rem;}
+  .mode-card p{margin:0;color:var(--mut);font-size:.85rem;}
+
+  .stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .stat{flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+  .stat .n{font-size:1.3rem;font-weight:800;}
+  .stat .l{font-size:.72rem;color:var(--mut2);text-transform:uppercase;letter-spacing:.08em;}
+
+  .btn{appearance:none;border:1px solid var(--line2);background:var(--card2);color:var(--txt);
+    font:inherit;font-weight:700;padding:13px 18px;border-radius:12px;cursor:pointer;transition:.12s;font-size:.95rem;}
+  .btn:active{transform:scale(.98);}
+  .btn.primary{background:linear-gradient(135deg,var(--acc),#7c3aed);border-color:transparent;color:#fff;box-shadow:0 6px 18px rgba(124,58,237,.35);}
+  .btn.ghost{background:transparent;}
+  .btn.wide{width:100%;}
+  .btn.sm{padding:9px 13px;font-size:.85rem;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+  /* MCQ / quiz */
+  .qmeta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;font-size:.8rem;color:var(--mut2);}
+  .topic-tag{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--acc2);
+    background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);border-radius:999px;padding:4px 9px;}
+  .qtext{font-size:1.08rem;font-weight:650;margin:.1em 0 14px;line-height:1.45;}
+  .opt{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;border:1px solid var(--line);
+    background:var(--card2);border-radius:12px;padding:13px 14px;margin-bottom:9px;cursor:pointer;transition:.12s;font:inherit;font-size:.95rem;color:var(--txt);}
+  .opt:hover{border-color:var(--line2);}
+  .opt:active{transform:scale(.995);}
+  .opt .key{width:24px;height:24px;border-radius:7px;background:var(--bg2);border:1px solid var(--line2);
+    display:grid;place-items:center;font-weight:800;font-size:.8rem;flex:none;color:var(--mut);}
+  .opt.correct{border-color:var(--good);background:rgba(52,211,153,.12);}
+  .opt.correct .key{background:var(--good);color:#04210f;border-color:var(--good);}
+  .opt.wrong{border-color:var(--bad);background:rgba(248,113,113,.12);}
+  .opt.wrong .key{background:var(--bad);color:#2a0606;border-color:var(--bad);}
+  .opt.dim{opacity:.55;}
+  .opt[disabled]{cursor:default;}
+  .explain{border-left:3px solid var(--acc);background:var(--card2);border-radius:0 10px 10px 0;
+    padding:12px 14px;margin-top:6px;font-size:.9rem;color:var(--mut);animation:fade .2s;}
+  .explain b{color:var(--txt);}
+
+  .progress{height:6px;background:var(--bg2);border-radius:999px;overflow:hidden;margin:4px 0 16px;}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:999px;transition:width .3s;}
+
+  /* flashcards */
+  .flip{perspective:1400px;margin-bottom:14px;}
+  .flip-inner{position:relative;transition:transform .5s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d;min-height:230px;cursor:pointer;}
+  .flip.flipped .flip-inner{transform:rotateY(180deg);}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;justify-content:center;}
+  .face.front{background:linear-gradient(160deg,var(--card2),var(--card));}
+  .face.back{background:linear-gradient(160deg,#1c1830,#161422);transform:rotateY(180deg);}
+  .face .qlabel{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--mut2);font-weight:700;margin-bottom:8px;}
+  .face .ftext{font-size:1.14rem;font-weight:650;line-height:1.4;}
+  .face .btext{font-size:.98rem;color:#e2e2ee;line-height:1.55;}
+  .tap-hint{font-size:.72rem;color:var(--mut2);margin-top:14px;text-align:center;}
+
+  /* exam */
+  .timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.05rem;}
+  .timer.low{color:var(--bad);}
+  .exam-q{margin-bottom:8px;}
+  .palette{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 14px;}
+  .pdot{width:34px;height:34px;border-radius:9px;border:1px solid var(--line2);background:var(--card2);
+    font-weight:700;font-size:.8rem;cursor:pointer;color:var(--mut);transition:.12s;}
+  .pdot.answered{background:rgba(139,92,246,.25);border-color:var(--acc);color:#fff;}
+  .pdot.current{outline:2px solid var(--acc2);outline-offset:1px;}
+  .result-big{font-size:2.6rem;font-weight:800;}
+  .review-item{border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:10px;background:var(--card2);}
+  .badge{display:inline-block;font-size:.7rem;font-weight:800;padding:3px 8px;border-radius:6px;}
+  .badge.ok{background:rgba(52,211,153,.16);color:var(--good);}
+  .badge.no{background:rgba(248,113,113,.16);color:var(--bad);}
+
+  /* SAQ in exam */
+  .saq-model{border:1px dashed var(--line2);border-radius:10px;padding:12px 14px;margin-top:10px;white-space:pre-wrap;font-size:.9rem;color:var(--mut);}
+
+  select,.sel{background:var(--card2);color:var(--txt);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font:inherit;font-size:.9rem;}
+
+  /* bottom nav */
+  nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:40;display:flex;
+    background:linear-gradient(0deg,rgba(11,11,18,.97),rgba(11,11,18,.86));backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));}
+  nav.tabs button{flex:1;background:none;border:0;color:var(--mut2);font:inherit;font-size:.66rem;font-weight:700;
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 2px;cursor:pointer;border-radius:10px;transition:.12s;}
+  nav.tabs button .ic{font-size:20px;line-height:1;}
+  nav.tabs button.active{color:var(--txt);}
+  nav.tabs button.active .ic{filter:drop-shadow(0 0 8px rgba(139,92,246,.6));}
+
+  .hide{display:none!important;}
+  .center{text-align:center;}
+  .muted{color:var(--mut);}
+  .small{font-size:.82rem;}
+  a{color:var(--acc2);}
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="brand">
+    <div class="logo">🧠</div>
+    <div>
+      <h1>NeuroMind PASSFORGE+</h1>
+      <div class="sub">ANHB2217 · Exam Trainer</div>
+    </div>
+    <span class="pill">v12 · MOBILE</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HOME -->
+  <section id="home" class="view active">
+    <h2 class="title">Exam Trainer</h2>
+    <p class="lead">High-yield ANHB2217 practice built from your unit's exam content. Works offline on phone and laptop. Progress saves automatically.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="n" id="stMcq">0</div><div class="l">MCQs seen</div></div>
+      <div class="stat"><div class="n" id="stAcc">—</div><div class="l">Accuracy</div></div>
+      <div class="stat"><div class="n" id="stStreak">0</div><div class="l">Best exam %</div></div>
+    </div>
+    <div class="grid">
+      <div class="card mode-card" onclick="go('quiz')">
+        <div class="mode-ic">✅</div>
+        <div><h3>MCQ Practice</h3><p>Drill questions one at a time with instant feedback and explanations. Filter by topic.</p></div>
+      </div>
+      <div class="card mode-card" onclick="go('cards')">
+        <div class="mode-ic">🃏</div>
+        <div><h3>Flashcards</h3><p>High-yield facts on tracts, arteries, cranial nerves, lesions and more. Tap to flip.</p></div>
+      </div>
+      <div class="card mode-card" onclick="go('examStart')">
+        <div class="mode-ic">⏱️</div>
+        <div><h3>Timed Mock Exam</h3><p>Full simulated paper: 40 MCQ + 10 short-answer, 2-hour timer, auto-marked MCQs.</p></div>
+      </div>
+    </div>
+    <p class="small muted center" style="margin-top:18px;">Content sourced from your ANHB2217 Space study materials. For exam prep — verify against official LMS notes.</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="view">
+    <div id="quizSetup">
+      <h2 class="title">MCQ Practice</h2>
+      <p class="lead">Pick a topic or do them all. Tap an answer to lock it in and see the explanation.</p>
+      <label class="small muted" for="quizTopic">Topic</label><br/>
+      <select id="quizTopic" style="width:100%;margin:6px 0 14px;"></select>
+      <label class="small muted">Order</label>
+      <div class="btn-row" style="margin:6px 0 18px;">
+        <button class="btn sm" id="ordSeq" onclick="setOrder('seq')">In order</button>
+        <button class="btn sm primary" id="ordRand" onclick="setOrder('rand')">Shuffle</button>
+      </div>
+      <button class="btn primary wide" onclick="startQuiz()">Start practice</button>
+    </div>
+
+    <div id="quizRun" class="hide">
+      <div class="qmeta">
+        <span class="topic-tag" id="qTopic">—</span>
+        <span id="qCount">1 / 40</span>
+      </div>
+      <div class="progress"><i id="qProg" style="width:0%"></i></div>
+      <div class="card">
+        <div class="qtext" id="qText"></div>
+        <div id="qOpts"></div>
+        <div id="qExplain"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn ghost sm" onclick="go('quizSetup')">Exit</button>
+        <button class="btn primary sm" id="qNext" onclick="nextQuiz()" style="margin-left:auto;">Next →</button>
+      </div>
+    </div>
+
+    <div id="quizDone" class="hide center">
+      <h2 class="title">Practice complete</h2>
+      <div class="result-big" id="quizScore">0/0</div>
+      <p class="lead" id="quizPct">—</p>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn" onclick="go('quizSetup')">New set</button>
+        <button class="btn primary" onclick="go('home')">Home</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLASHCARDS -->
+  <section id="cards" class="view">
+    <div id="cardsSetup">
+      <h2 class="title">Flashcards</h2>
+      <p class="lead">Tap a card to flip. Mark each as “got it” or “again” to focus your revision.</p>
+      <label class="small muted" for="cardTopic">Topic</label><br/>
+      <select id="cardTopic" style="width:100%;margin:6px 0 18px;"></select>
+      <button class="btn primary wide" onclick="startCards()">Start cards</button>
+    </div>
+
+    <div id="cardsRun" class="hide">
+      <div class="qmeta">
+        <span class="topic-tag" id="cTopic">—</span>
+        <span id="cCount">1 / 36</span>
+      </div>
+      <div class="progress"><i id="cProg" style="width:0%"></i></div>
+      <div class="flip" id="flipCard" onclick="flipCard()">
+        <div class="flip-inner">
+          <div class="face front">
+            <div class="qlabel">Prompt</div>
+            <div class="ftext" id="cFront"></div>
+            <div class="tap-hint">tap to reveal answer</div>
+          </div>
+          <div class="face back">
+            <div class="qlabel">Answer</div>
+            <div class="btext" id="cBack"></div>
+            <div class="tap-hint">tap to flip back</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn sm" style="flex:1;border-color:rgba(248,113,113,.4);" onclick="markCard(false)">↻ Again</button>
+        <button class="btn sm" style="flex:1;border-color:rgba(52,211,153,.4);" onclick="markCard(true)">✓ Got it</button>
+      </div>
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn ghost sm" onclick="go('cardsSetup')">Exit</button>
+      </div>
+    </div>
+
+    <div id="cardsDone" class="hide center">
+      <h2 class="title">Deck complete</h2>
+      <div class="result-big" id="cardsGot">0/0</div>
+      <p class="lead">cards marked “got it”</p>
+      <div class="btn-row" style="justify-content:center;">
+        <button class="btn" id="cardsRedo">Review “again” only</button>
+        <button class="btn primary" onclick="go('cardsSetup')">New deck</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXAM START -->
+  <section id="examStart" class="view">
+    <h2 class="title">Timed Mock Exam</h2>
+    <p class="lead">A close simulacrum of the ANHB2217 final: <b>Section A</b> — 40 MCQs (auto-marked), <b>Section B</b> — 10 short-answer questions you self-mark against model answers. 100 marks, 2 hours.</p>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span class="muted">Section A · MCQ</span><b>40 marks</b></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span class="muted">Section B · Short answer</span><b>60 marks</b></div>
+      <div style="display:flex;justify-content:space-between;"><span class="muted">Time allowed</span><b>120 min</b></div>
+    </div>
+    <label class="small muted">Timer</label>
+    <div class="btn-row" style="margin:6px 0 16px;">
+      <button class="btn sm primary" id="tm120" onclick="setExamTime(120)">120 min</button>
+      <button class="btn sm" id="tm60" onclick="setExamTime(60)">60 min</button>
+      <button class="btn sm" id="tm0" onclick="setExamTime(0)">No timer</button>
+    </div>
+    <button class="btn primary wide" onclick="startExam()">Begin exam</button>
+  </section>
+
+  <!-- EXAM RUN -->
+  <section id="examRun" class="view">
+    <div class="qmeta">
+      <span class="topic-tag" id="exSection">Section A</span>
+      <span class="timer" id="exTimer">2:00:00</span>
+    </div>
+    <div class="palette" id="exPalette"></div>
+    <div class="progress"><i id="exProg" style="width:0%"></i></div>
+    <div class="card">
+      <div class="qmeta"><span id="exQNum">Q1</span><span id="exMarks" class="muted small"></span></div>
+      <div class="qtext exam-q" id="exQText"></div>
+      <div id="exBody"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost sm" id="exPrev" onclick="examNav(-1)">← Prev</button>
+      <button class="btn sm" id="exNext" onclick="examNav(1)">Next →</button>
+      <button class="btn primary sm" style="margin-left:auto;" onclick="confirmSubmit()">Submit</button>
+    </div>
+  </section>
+
+  <!-- EXAM RESULT -->
+  <section id="examResult" class="view">
+    <h2 class="title center">Results</h2>
+    <div class="center">
+      <div class="result-big" id="exMcqScore">0/40</div>
+      <p class="lead">Section A (MCQ) auto-marked</p>
+    </div>
+    <div class="card">
+      <p class="muted small" style="margin-top:0;">Section B is self-marked. Reveal each model answer below, score yourself out of the marks shown, and add it to your total.</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Your Section B self-score</span>
+        <span><input type="number" id="sbScore" min="0" max="60" value="0" style="width:64px;background:var(--card2);color:var(--txt);border:1px solid var(--line2);border-radius:8px;padding:6px;font:inherit;text-align:center;"> / 60</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:1.1rem;font-weight:800;">
+        <span>Total</span><span id="exTotal">— / 100</span>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-bottom:18px;">
+      <button class="btn sm" onclick="go('examStart')">Retake</button>
+      <button class="btn ghost sm" onclick="go('home')">Home</button>
+    </div>
+    <h3 style="margin:.4em 0;">Section A review</h3>
+    <div id="exReview"></div>
+    <h3 style="margin:1em 0 .4em;">Section B · model answers</h3>
+    <div id="exSaqReview"></div>
+  </section>
+
+</main>
+
+<nav class="tabs">
+  <button id="tab-home" class="active" onclick="go('home')"><span class="ic">🏠</span>Home</button>
+  <button id="tab-quiz" onclick="go('quiz')"><span class="ic">✅</span>MCQ</button>
+  <button id="tab-cards" onclick="go('cards')"><span class="ic">🃏</span>Cards</button>
+  <button id="tab-examStart" onclick="go('examStart')"><span class="ic">⏱️</span>Exam</button>
+</nav>
+<script>
+// ANHB2217 Human Neurobiology — Exam content data
+// Sourced from Space study materials: simulated final exam (40 MCQ + 10 SAQ) and high-yield checklists.
+
+const MCQS = [
+  {q:"The dorsal column–medial lemniscus pathway primarily carries:",o:["Pain and temperature","Crude touch and itch","Fine touch, vibration, proprioception","Motor commands to axial muscles","Auditory information from cochlea to cortex"],a:2,topic:"Tracts",exp:"The DCML carries fine/discriminative touch, vibration and conscious proprioception. Pain/temperature travel in the spinothalamic tract."},
+  {q:"First-order neurons in the dorsal column–medial lemniscus pathway synapse in which nuclei?",o:["Red and substantia nigra","Gracile and cuneate","VPL and VPM","LGN and MGN","Facial and ambiguous nuclei"],a:1,topic:"Tracts",exp:"First-order DCML axons ascend ipsilaterally and synapse on second-order neurons in the gracile and cuneate nuclei of the caudal medulla."},
+  {q:"A hemisection of the right spinal cord at T10 produces which pattern?",o:["Loss of pain and temperature on right below lesion","Loss of vibration on left below lesion","Loss of vibration on right and loss of pain on left below lesion","Bilateral loss of all modalities below lesion","Contralateral loss of all modalities from face and body"],a:2,topic:"Lesions",exp:"Brown-Séquard: ipsilateral (right) loss of dorsal-column modalities + contralateral (left) loss of pain/temperature below the lesion."},
+  {q:"The spinothalamic pathway decussates:",o:["In the medullary pyramids","In the internal capsule","Across the anterior white commissure within 1–2 segments","At the optic chiasm","In the cerebellar peduncles"],a:2,topic:"Tracts",exp:"Second-order spinothalamic neurons cross in the anterior white commissure within 1–2 segments of entry, then ascend contralaterally."},
+  {q:"The corticospinal tract decussates mainly at the:",o:["Pontine tegmentum","Midbrain colliculi","Caudal medullary pyramids","Cervical spinal cord","Internal capsule"],a:2,topic:"Tracts",exp:"About 85–90% of corticospinal fibres cross at the pyramidal decussation in the caudal medulla to form the lateral corticospinal tract."},
+  {q:"A pure upper motor neuron lesion of the right corticospinal tract above the decussation produces:",o:["Right flaccid paralysis, fasciculations, areflexia","Left spastic weakness, hyperreflexia, Babinski sign","Right spastic weakness, hyporeflexia","Bilateral flaccid paralysis","Isolated loss of pain and temperature from left body"],a:1,topic:"Lesions",exp:"A lesion above the decussation affects the contralateral (left) body with UMN signs: spasticity, hyperreflexia, Babinski."},
+  {q:"The ACA stroke classically produces:",o:["Contralateral face and upper limb weakness > leg","Contralateral leg weakness and sensory loss","Contralateral homonymous hemianopia","Ipsilateral ataxia and dysmetria","Locked-in syndrome"],a:1,topic:"Blood supply",exp:"ACA supplies the medial cortex including the leg area of the homunculus → contralateral leg-predominant weakness/sensory loss."},
+  {q:"Occlusion of the PCA most characteristically causes:",o:["Aphasia and right facial weakness","Leg-predominant hemiparesis","Homonymous hemianopia with macular sparing","Pure motor hemiparesis without sensory loss","Facial pain and temperature loss with contralateral body pain loss"],a:2,topic:"Blood supply",exp:"PCA supplies the occipital cortex → contralateral homonymous hemianopia, often with macular sparing (dual MCA supply to the macula)."},
+  {q:"The arterial supply most associated with lateral medullary (Wallenberg) syndrome is:",o:["Anterior spinal artery","PICA","AICA","Basilar artery","MCA"],a:1,topic:"Blood supply",exp:"Lateral medullary (Wallenberg) syndrome is classically associated with PICA (or vertebral artery) occlusion."},
+  {q:"A lesion of the left optic tract produces:",o:["Left monocular blindness","Bitemporal hemianopia","Right homonymous hemianopia","Left homonymous hemianopia","Right superior quadrantanopia"],a:2,topic:"Visual system",exp:"A lesion behind the chiasm (left optic tract) causes a contralateral (right) homonymous hemianopia."},
+  {q:"The LGN receives input from and projects to:",o:["Retina → primary visual cortex","Inferior colliculus → auditory cortex","Dorsal root ganglia → S1","Reticular formation → frontal cortex","Vestibular system → cerebellum"],a:0,topic:"Visual system",exp:"The lateral geniculate nucleus relays retinal input to the primary visual cortex via the optic radiations."},
+  {q:"The VPL thalamic nucleus receives:",o:["Somatosensory from body","Somatosensory from face","Auditory input","Visual input","Olfactory input"],a:0,topic:"Thalamus",exp:"VPL (ventral posterolateral) relays body somatosensation; VPM relays face somatosensation."},
+  {q:"The VPM thalamic nucleus receives:",o:["Pain from trunk","General and special sensory from face","Visual input from optic tract","Olfactory input","Motor input from cerebellum"],a:1,topic:"Thalamus",exp:"VPM (ventral posteromedial) relays general sensation and taste from the face."},
+  {q:"The basal ganglia direct pathway:",o:["Inhibits thalamus and suppresses movement","Disinhibits thalamus and facilitates movement","Inhibits cerebellum","Primarily mediates pain perception","Mediates visual reflexes"],a:1,topic:"Basal ganglia",exp:"The direct pathway inhibits GPi/SNr, reducing inhibition on the thalamus (disinhibition) → facilitates movement."},
+  {q:"Dopamine from substantia nigra pars compacta acts at striatal receptors to:",o:["Inhibit D1, excite D2 – suppressing movement","Excite D1, inhibit D2 – facilitating movement","Excite both D1 and D2 – causing rigidity only","Inhibit both D1 and D2 – causing flaccidity","Only modulate sensory thalamic nuclei"],a:1,topic:"Basal ganglia",exp:"Dopamine excites D1 (boosts direct/go) and inhibits D2 (dampens indirect/no-go), net pro-movement."},
+  {q:"Parkinson's disease is best described as:",o:["Degeneration of cerebellar Purkinje cells","Degeneration of motor neurons in spinal cord","Degeneration of dopaminergic neurons in substantia nigra pars compacta","Demyelination of corticospinal tracts","Degeneration of hippocampal neurons"],a:2,topic:"Basal ganglia",exp:"PD is loss of dopaminergic neurons in the SNc → underactive direct/overactive indirect pathway → bradykinesia, rigidity, resting tremor."},
+  {q:"A left posterior superior temporal gyrus lesion (dominant hemisphere) typically produces:",o:["Broca's aphasia – non-fluent, good comprehension","Wernicke's aphasia – fluent, poor comprehension","Conductive aphasia – impaired repetition only","Global aphasia – complete loss of language","Pure alexia without agraphia"],a:1,topic:"Cortex",exp:"Wernicke's area lies in the posterior superior temporal gyrus; lesions give fluent speech with poor comprehension."},
+  {q:"The primary motor cortex is located in:",o:["Precentral gyrus, Brodmann area 4","Postcentral gyrus, areas 1–3","Calcarine sulcus, area 17","Superior temporal gyrus, areas 41/42","Inferior parietal lobule, area 7"],a:0,topic:"Cortex",exp:"M1 is the precentral gyrus, Brodmann area 4."},
+  {q:"The spinocerebellum is most associated with:",o:["Eye movements only","Fine finger movements only","Gait and posture, trunk and proximal limb control","Memory consolidation","Emotional regulation"],a:2,topic:"Cerebellum",exp:"The spinocerebellum (vermis + intermediate zones) controls gait, posture and proximal limb coordination."},
+  {q:"Lesions of cerebrocerebellum typically cause:",o:["Truncal ataxia","Intention tremor, dysmetria, dysdiadochokinesia","Resting tremor","Rigidity","Flaccid paralysis"],a:1,topic:"Cerebellum",exp:"The cerebrocerebellum (lateral hemispheres) plans skilled distal movement; lesions cause intention tremor, dysmetria, dysdiadochokinesia."},
+  {q:"A lesion affecting CN III in the midbrain will most likely lead to:",o:["Ipsilateral facial paralysis","Down-and-out eye, ptosis, dilated pupil","Loss of corneal reflex afferent limb","Tongue deviation towards lesion","Loss of gag reflex"],a:1,topic:"Cranial nerves",exp:"CN III palsy: eye 'down and out' (unopposed LR + SO), ptosis (levator), and a dilated pupil (loss of parasympathetic)."},
+  {q:"CN VII lesion in the stylomastoid foramen produces:",o:["Loss of taste from posterior third of tongue","Loss of taste from anterior two-thirds of tongue and facial paralysis","Loss of somatosensation from face","Impaired hearing only","Impaired balance only"],a:1,topic:"Cranial nerves",exp:"At the stylomastoid foramen the facial nerve LMN lesion gives ipsilateral whole-face paralysis. (Note: a pure stylomastoid lesion may spare taste, but the exam key marks this option.)"},
+  {q:"The trigeminal spinal nucleus is primarily involved in:",o:["Fine touch from face","Proprioception from jaw","Pain and temperature from face","Auditory processing","Olfaction"],a:2,topic:"Cranial nerves",exp:"The spinal trigeminal nucleus handles pain and temperature from the face; the principal (chief) nucleus handles fine touch."},
+  {q:"The vestibulo-ocular reflex (VOR):",o:["Stabilises gaze during head movements","Controls pupil constriction","Mediates auditory localization","Controls tear production","Modulates olfactory sensitivity"],a:0,topic:"Vestibular",exp:"The VOR generates compensatory eye movements to stabilise gaze (fixation) during head movement."},
+  {q:"The semicircular canals detect:",o:["Linear acceleration only","Angular acceleration","Gravity only","Sound frequency","Temperature changes"],a:1,topic:"Vestibular",exp:"Semicircular canals detect angular (rotational) acceleration; otolith organs detect linear acceleration and gravity."},
+  {q:"The otolith organs (utricle and saccule) primarily detect:",o:["Angular acceleration","Linear acceleration and head position relative to gravity","Sound intensity","Eye movements","Pain from the dura"],a:1,topic:"Vestibular",exp:"The utricle and saccule sense linear acceleration and head tilt relative to gravity."},
+  {q:"The suprachiasmatic nucleus (SCN) is primarily responsible for:",o:["Feeding behaviour","Thermoregulation","Circadian rhythm regulation","Osmoregulation","Fear conditioning"],a:2,topic:"Hypothalamus",exp:"The SCN is the master circadian pacemaker, entrained by retinal light input."},
+  {q:"The ventromedial hypothalamus broadly mediates:",o:["Hunger and drinking","Satiety","Circadian rhythms","Thermogenesis","Fear responses"],a:1,topic:"Hypothalamus",exp:"The ventromedial nucleus is the satiety centre; the lateral hypothalamus drives hunger/feeding."},
+  {q:"Failure of anterior neuropore closure results in:",o:["Myelomeningocele","Spina bifida occulta","Anencephaly","Holoprosencephaly","Lissencephaly"],a:2,topic:"Development",exp:"Failed anterior (rostral) neuropore closure → anencephaly. Posterior neuropore failure → spina bifida."},
+  {q:"Failure of posterior neuropore closure leads most directly to:",o:["Anencephaly","Spina bifida spectrum","Microcephaly","Lissencephaly","Hydrocephalus"],a:1,topic:"Development",exp:"Failed posterior (caudal) neuropore closure → spina bifida spectrum."},
+  {q:"The prosencephalon gives rise to:",o:["Midbrain only","Pons and cerebellum","Telencephalon and diencephalon","Medulla and spinal cord","Cerebellum and medulla"],a:2,topic:"Development",exp:"Prosencephalon (forebrain) → telencephalon (hemispheres, basal ganglia) + diencephalon (thalamus, hypothalamus)."},
+  {q:"The telencephalon develops into:",o:["Thalamus and hypothalamus","Cerebral hemispheres and basal ganglia","Midbrain tectum and tegmentum","Pons and cerebellum","Medulla"],a:1,topic:"Development",exp:"Telencephalon → cerebral hemispheres (cortex) and basal ganglia."},
+  {q:"The primary visual cortex is located around:",o:["Precentral gyrus","Postcentral gyrus","Calcarine sulcus in occipital lobe","Superior temporal sulcus","Inferior frontal gyrus"],a:2,topic:"Cortex",exp:"V1 (area 17) lies along the calcarine sulcus of the occipital lobe."},
+  {q:"A lesion of the right parietal lobe (non-dominant) classically causes:",o:["Broca's aphasia","Wernicke's aphasia","Contralateral neglect of left space","Pure motor hemiparesis","Pure sensory aphasia"],a:2,topic:"Cortex",exp:"Non-dominant (right) parietal lesions cause contralateral (left) hemispatial neglect."},
+  {q:"In the Rule of 4s, which of the following is a medial brainstem structure?",o:["Spinothalamic tract","Spinocerebellar tract","Sympathetic pathway","Medial longitudinal fasciculus (MLF)","Sensory trigeminal nucleus"],a:3,topic:"Brainstem",exp:"Medial 'M' structures: Motor pathway, Medial lemniscus, MLF, Motor CN nuclei. The MLF is medial."},
+  {q:"In lateral medullary syndrome, which cranial nerve nucleus is characteristically involved?",o:["Oculomotor nucleus","Abducens nucleus","Facial nucleus","Nucleus ambiguus","Hypoglossal nucleus"],a:3,topic:"Brainstem",exp:"Lateral medullary (Wallenberg) syndrome involves nucleus ambiguus → dysphagia, hoarseness, loss of gag."},
+  {q:"A unilateral lesion of MLF in the pons produces:",o:["Complete bilateral blindness","Internuclear ophthalmoplegia","Locked-in syndrome","Vertigo without nystagmus","Loss of gag reflex"],a:1,topic:"Brainstem",exp:"An MLF lesion causes internuclear ophthalmoplegia: failure of adduction of the ipsilateral eye on lateral gaze."},
+  {q:"In the auditory pathway, which structure projects to the medial geniculate nucleus (MGN)?",o:["Cochlea","Cochlear nuclei","Superior olivary complex","Inferior colliculus","Primary auditory cortex"],a:3,topic:"Auditory",exp:"Auditory pathway: cochlea → cochlear nuclei → superior olive → inferior colliculus → MGN → auditory cortex."},
+  {q:"A communicating hydrocephalus is best explained by:",o:["Obstruction of aqueduct of Sylvius","Obstruction of foramen of Monro","Impaired CSF absorption at arachnoid granulations","Overproduction of CSF by choroid plexus","Tumour in fourth ventricle blocking foramina of Luschka"],a:2,topic:"Ventricles/CSF",exp:"Communicating hydrocephalus = impaired CSF absorption at the arachnoid granulations (ventricles still communicate with the subarachnoid space)."},
+  {q:"A subdural haematoma is classically due to:",o:["Rupture of middle meningeal artery","Rupture of bridging veins","Rupture of basilar artery","Rupture of PICA","Rupture of lenticulostriate arteries"],a:1,topic:"Meninges",exp:"Subdural haematoma = torn bridging (cortical) veins, often in elderly/atrophy. Epidural = middle meningeal artery."}
+];
+
+const SAQS = [
+  {q:"Q41. Dorsal column–medial lemniscus (6 marks)",prompt:"a) List the modalities carried by the dorsal column–medial lemniscus pathway. (2)\nb) Outline the three-neuron chain from receptor to cortex, including where decussation occurs. (4)",topic:"Tracts",model:"a) Fine/discriminative touch, vibration sense, conscious proprioception (joint position/movement).\nb) 1st-order: cell body in DRG; central axon ascends ipsilaterally in fasciculus gracilis (lower body) / cuneatus (upper body) to caudal medulla. 2nd-order: synapses in gracile/cuneate nuclei; axons decussate as internal arcuate fibres and ascend as the medial lemniscus to contralateral VPL of thalamus. 3rd-order: VPL → posterior limb of internal capsule → primary somatosensory cortex (postcentral gyrus)."},
+  {q:"Q42. Spinothalamic tract and Brown-Séquard (6 marks)",prompt:"a) Outline the course of the spinothalamic pathway including where it crosses. (3)\nb) For a right hemisection at T8, describe the distribution of loss of pain/temperature and fine touch/vibration/proprioception in the body. (3)",topic:"Lesions",model:"a) 1st-order: DRG → enters dorsal horn, synapses in substantia gelatinosa/lamina I–II. 2nd-order: decussates across the anterior white commissure within 1–2 segments, ascends contralaterally in the anterolateral system to VPL. 3rd-order: VPL → primary somatosensory cortex.\nb) Right T8 hemisection: ipsilateral (right) loss of fine touch/vibration/proprioception below T8 (dorsal columns); contralateral (left) loss of pain/temperature beginning ~1–2 segments below T8 (spinothalamic crosses); plus ipsilateral UMN signs below the lesion (corticospinal)."},
+  {q:"Q43. Corticospinal tract and UMN vs LMN (6 marks)",prompt:"a) Describe the course of the lateral corticospinal tract from cortex to spinal cord. (3)\nb) Contrast upper and lower motor neuron lesion signs and give one specific example lesion for each. (3)",topic:"Tracts",model:"a) UMN cell bodies in M1 (precentral gyrus) → corona radiata → posterior limb of internal capsule → cerebral peduncle (midbrain) → ventral pons → medullary pyramids → ~85–90% decussate at caudal medulla → lateral corticospinal tract → synapse on LMNs/interneurons in ventral horn.\nb) UMN lesion: spasticity, hyperreflexia, increased tone, Babinski sign, little early atrophy (e.g. internal capsule stroke). LMN lesion: flaccid paralysis, hyporeflexia/areflexia, fasciculations, marked atrophy (e.g. peripheral nerve lesion / anterior horn cell disease)."},
+  {q:"Q44. Circle of Willis and cortical strokes (8 marks)",prompt:"a) Draw and label a simplified Circle of Willis (ICA, ACA, MCA, PCA, ACoA, PCoA, basilar, vertebral arteries). (4)\nb) For each of ACA, MCA and PCA, list one key cortical territory and two hallmark clinical deficits in an occlusive stroke. (4)",topic:"Blood supply",model:"a) Paired ICAs each give ACA + MCA; ACoA connects the two ACAs; PCoA links ICA to PCA; vertebral arteries join to form the basilar, which bifurcates into the PCAs.\nb) ACA — medial frontal/parietal cortex (leg area): contralateral leg weakness + sensory loss (± behavioural/urinary). MCA — lateral convexity (face/arm + dominant language): contralateral face/arm weakness > leg, aphasia (dominant) or neglect (non-dominant). PCA — occipital cortex: contralateral homonymous hemianopia (often macular sparing) ± alexia without agraphia (dominant)."},
+  {q:"Q45. Brainstem: Rule of 4s and named syndrome (8 marks)",prompt:"a) List the four medial and four lateral structures in the Rule of 4s. (4)\nb) Explain the key neurological signs of medial medullary syndrome. (4)",topic:"Brainstem",model:"a) Medial (4 M's): Motor pathway (corticospinal), Medial lemniscus, MLF, Motor CN nuclei (III, IV, VI, XII). Lateral (4 S's): Spinocerebellar tract, Spinothalamic tract, Sensory trigeminal nucleus, Sympathetic pathway.\nb) Medial medullary syndrome (anterior spinal artery): corticospinal tract → contralateral spastic hemiparesis; medial lemniscus → contralateral loss of vibration/proprioception; hypoglossal nucleus/fibres (CN XII) → ipsilateral tongue weakness with deviation toward the lesion."},
+  {q:"Q46. Cranial nerve example: CN VII (7 marks)",prompt:"a) State the brainstem level and general position of the facial nucleus. (2)\nb) List three main functional components of CN VII and give one target/role for each. (3)\nc) Describe the clinical features of an LMN lesion of CN VII at the stylomastoid foramen. (2)",topic:"Cranial nerves",model:"a) Facial nucleus in the caudal pons (near pontomedullary junction), positioned laterally in the tegmentum (branchiomotor).\nb) Branchial motor → muscles of facial expression, stapedius, posterior belly of digastric. Special sensory → taste from anterior 2/3 of tongue (chorda tympani). Parasympathetic → lacrimal, submandibular and sublingual glands.\nc) LMN lesion at stylomastoid foramen: ipsilateral paralysis of ALL facial expression muscles — cannot close eye, drooping mouth, loss of forehead wrinkling (whole side, unlike a UMN/central lesion which spares the forehead)."},
+  {q:"Q47. Basal ganglia circuits and Parkinson's (7 marks)",prompt:"a) Describe the direct and indirect pathways of the basal ganglia, including the effect of dopamine on each. (4)\nb) Explain how degeneration of SNc neurons leads to the typical motor signs of Parkinson's disease. (3)",topic:"Basal ganglia",model:"a) Direct: cortex excites striatum (D1) → inhibits GPi/SNr → reduces inhibition of thalamus → facilitates movement. Indirect: cortex excites striatum (D2) → inhibits GPe → disinhibits STN → excites GPi/SNr → increases inhibition of thalamus → suppresses movement. Dopamine (SNc) excites D1 (enhances 'go') and inhibits D2 (reduces 'no-go') → net pro-movement.\nb) SNc degeneration → less D1 stimulation + less D2 inhibition → underactive direct, overactive indirect → excessive thalamic inhibition → bradykinesia/akinesia, rigidity, resting tremor, postural instability."},
+  {q:"Q48. Cerebellar functional divisions and lesions (6 marks)",prompt:"a) Name the three functional divisions of the cerebellum and their main roles. (3)\nb) For each division, list one characteristic lesion sign. (3)",topic:"Cerebellum",model:"a) Vestibulocerebellum (flocculonodular lobe): balance and eye movements. Spinocerebellum (vermis + intermediate zones): gait, posture, proximal limb control. Cerebrocerebellum (lateral hemispheres): planning/coordination of fine skilled movements.\nb) Vestibulocerebellum → truncal ataxia/nystagmus/disequilibrium. Spinocerebellum → gait ataxia, wide-based stance. Cerebrocerebellum → ipsilateral limb ataxia, intention tremor, dysmetria, dysdiadochokinesia."},
+  {q:"Q49. Hypothalamus and limbic system (6 marks)",prompt:"a) Group five hypothalamic nuclei into functional categories and give a one-line function for each. (3)\nb) Name three major limbic structures and state one key role for each. (3)",topic:"Hypothalamus",model:"a) Lateral nucleus → hunger/thirst/feeding. Ventromedial nucleus → satiety. Anterior nucleus → heat dissipation/parasympathetic. Posterior nucleus → heat conservation/sympathetic. Suprachiasmatic nucleus → circadian pacemaker. (Supraoptic/paraventricular → ADH/oxytocin — bonus.)\nb) Hippocampus → declarative memory consolidation & spatial navigation. Amygdala → emotion, especially fear/threat. Cingulate cortex → emotional processing, pain, motivation. (Nucleus accumbens → reward — bonus.)"},
+  {q:"Q50. Development, vesicles and malformations (6 marks)",prompt:"a) List the three primary brain vesicles and the five secondary vesicles that arise from them. (3)\nb) Match anencephaly, spina bifida and lissencephaly to the underlying developmental error. (3)",topic:"Development",model:"a) Primary: prosencephalon, mesencephalon, rhombencephalon. Secondary: prosencephalon → telencephalon + diencephalon; mesencephalon → mesencephalon (midbrain); rhombencephalon → metencephalon (pons + cerebellum) + myelencephalon (medulla).\nb) Anencephaly → failure of anterior neuropore closure. Spina bifida → failure of posterior neuropore closure. Lissencephaly → defective neuronal migration (smooth brain, reduced/absent gyri)."}
+];
+
+const FLASHCARDS = [
+  {topic:"Blood supply",f:"ACA occlusion — deficit?",b:"Contralateral LEG weakness + sensory loss (medial cortex / leg homunculus). ± behavioural change, urinary incontinence."},
+  {topic:"Blood supply",f:"MCA occlusion — deficit?",b:"Contralateral FACE/ARM weakness > leg; aphasia if dominant hemisphere, neglect if non-dominant."},
+  {topic:"Blood supply",f:"PCA occlusion — deficit?",b:"Contralateral homonymous hemianopia, often with MACULAR SPARING. ± alexia without agraphia (dominant)."},
+  {topic:"Blood supply",f:"PICA occlusion — syndrome?",b:"Lateral medullary (Wallenberg) syndrome: ipsilateral facial pain/temp loss + Horner's, contralateral body pain/temp loss, dysphagia/hoarseness (nucleus ambiguus), vertigo, ipsilateral ataxia."},
+  {topic:"Blood supply",f:"ASA (anterior spinal artery) medulla — syndrome?",b:"Medial medullary syndrome: contralateral hemiparesis (corticospinal), contralateral loss of vibration/proprioception (medial lemniscus), ipsilateral tongue deviation (CN XII)."},
+  {topic:"Tracts",f:"DCML: modalities + decussation?",b:"Fine touch, vibration, proprioception. Decussates as internal arcuate fibres in the caudal medulla (after gracile/cuneate nuclei) → medial lemniscus → VPL."},
+  {topic:"Tracts",f:"Spinothalamic: modalities + decussation?",b:"Pain & temperature. Decussates in the anterior white commissure within 1–2 segments of entry, then ascends contralaterally to VPL."},
+  {topic:"Tracts",f:"Corticospinal: where does it cross?",b:"~85–90% cross at the pyramidal decussation (caudal medulla) → lateral corticospinal tract. Remainder = anterior corticospinal tract."},
+  {topic:"Lesions",f:"Brown-Séquard (cord hemisection) pattern?",b:"Ipsilateral: loss of DCML (touch/vibration/proprioception) + UMN signs below. Contralateral: loss of pain/temperature ~1–2 segments below lesion."},
+  {topic:"Lesions",f:"UMN vs LMN signs?",b:"UMN: spasticity, hyperreflexia, ↑tone, Babinski, little atrophy. LMN: flaccid, hyporeflexia, fasciculations, marked atrophy."},
+  {topic:"Brainstem",f:"Rule of 4s — the 4 MEDIAL structures?",b:"Motor pathway (corticospinal), Medial lemniscus, MLF, Motor CN nuclei (III, IV, VI, XII — the ones that divide into 12)."},
+  {topic:"Brainstem",f:"Rule of 4s — the 4 LATERAL structures?",b:"Spinocerebellar tract, Spinothalamic tract, Sensory trigeminal nucleus, Sympathetic pathway."},
+  {topic:"Brainstem",f:"MLF lesion → ?",b:"Internuclear ophthalmoplegia (INO): failure of adduction of the ipsilateral eye on lateral gaze, with nystagmus in the abducting eye."},
+  {topic:"Cranial nerves",f:"CN III palsy signs?",b:"Eye 'down and out' (unopposed LR & SO), ptosis (levator palpebrae), dilated pupil (loss of parasympathetic to sphincter pupillae)."},
+  {topic:"Cranial nerves",f:"CN VII LMN lesion (Bell's-type) vs UMN?",b:"LMN: WHOLE ipsilateral face paralysed (incl. forehead). UMN (central): forehead SPARED (bilateral cortical input to upper face)."},
+  {topic:"Cranial nerves",f:"Trigeminal nuclei — touch vs pain?",b:"Principal (chief) sensory nucleus = fine touch from face. Spinal trigeminal nucleus = pain & temperature. Mesencephalic = proprioception (jaw)."},
+  {topic:"Thalamus",f:"VPL vs VPM?",b:"VPL = body somatosensation. VPM = face general sensation + taste."},
+  {topic:"Thalamus",f:"LGN vs MGN?",b:"LGN (Lateral) = vision (retina → V1). MGN (Medial) = audition (inferior colliculus → auditory cortex)."},
+  {topic:"Basal ganglia",f:"Direct vs indirect pathway net effect?",b:"Direct = facilitates movement (disinhibits thalamus). Indirect = suppresses movement (increases thalamic inhibition via STN→GPi)."},
+  {topic:"Basal ganglia",f:"Dopamine action on D1/D2?",b:"Excites D1 (boosts direct/go), inhibits D2 (dampens indirect/no-go). Net = pro-movement. Loss (PD) → hypokinesia."},
+  {topic:"Cerebellum",f:"Three functional divisions + roles?",b:"Vestibulocerebellum = balance/eye movements. Spinocerebellum = gait/posture/proximal limbs. Cerebrocerebellum = fine skilled movement planning."},
+  {topic:"Cerebellum",f:"Cerebellar lesion — which side?",b:"IPSILATERAL signs (ataxia, intention tremor, dysmetria, dysdiadochokinesia) — cerebellum acts on same side of body."},
+  {topic:"Visual system",f:"Optic nerve vs chiasm vs tract lesion?",b:"Optic nerve = monocular blindness. Chiasm = bitemporal hemianopia. Optic tract = contralateral homonymous hemianopia."},
+  {topic:"Visual system",f:"Optic radiation lesions (quadrantanopias)?",b:"Temporal (Meyer's loop) → contralateral SUPERIOR quadrantanopia ('pie in the sky'). Parietal → contralateral INFERIOR quadrantanopia."},
+  {topic:"Auditory",f:"Auditory pathway order?",b:"Cochlea → cochlear nuclei → superior olivary complex → inferior colliculus → MGN → primary auditory cortex (areas 41/42)."},
+  {topic:"Vestibular",f:"Semicircular canals vs otoliths?",b:"Semicircular canals = angular (rotational) acceleration. Otoliths (utricle/saccule) = linear acceleration + head tilt/gravity."},
+  {topic:"Hypothalamus",f:"Feeding vs satiety nuclei?",b:"Lateral hypothalamus = hunger/feeding ('lateral = lean when lesioned... actually lesion → aphagia'). Ventromedial = satiety (lesion → obesity)."},
+  {topic:"Hypothalamus",f:"SCN role?",b:"Suprachiasmatic nucleus = master circadian pacemaker, entrained by light via the retinohypothalamic tract."},
+  {topic:"Cortex",f:"Broca vs Wernicke aphasia?",b:"Broca (inferior frontal, 44/45) = non-fluent, comprehension intact. Wernicke (posterior superior temporal) = fluent but nonsensical, poor comprehension."},
+  {topic:"Cortex",f:"Key Brodmann areas?",b:"4 = primary motor. 1/2/3 = primary somatosensory. 17 = primary visual. 41/42 = primary auditory. 44/45 = Broca."},
+  {topic:"Ventricles/CSF",f:"CSF flow route?",b:"Lateral ventricles → foramen of Monro → 3rd ventricle → cerebral aqueduct → 4th ventricle → foramina of Luschka/Magendie → subarachnoid space → arachnoid granulations → dural venous sinuses."},
+  {topic:"Ventricles/CSF",f:"Communicating vs obstructive hydrocephalus?",b:"Communicating = impaired absorption at arachnoid granulations (system still connected). Obstructive (non-communicating) = blockage within ventricles (e.g. aqueductal stenosis)."},
+  {topic:"Meninges",f:"Epidural vs subdural haematoma source?",b:"Epidural = middle meningeal artery (lens/biconvex, lucid interval). Subdural = bridging veins (crescent, elderly/atrophy)."},
+  {topic:"Development",f:"Neuropore failures?",b:"Anterior (rostral) neuropore failure → anencephaly. Posterior (caudal) neuropore failure → spina bifida spectrum."},
+  {topic:"Development",f:"Primary → secondary vesicles?",b:"Prosencephalon → telencephalon + diencephalon. Mesencephalon → midbrain. Rhombencephalon → metencephalon (pons+cerebellum) + myelencephalon (medulla)."},
+  {topic:"Development",f:"Lissencephaly cause?",b:"Defective neuronal migration → smooth brain (absent/reduced gyri), severe cognitive impairment."}
+];
+
+if (typeof module !== 'undefined') { module.exports = { MCQS, SAQS, FLASHCARDS }; }
+
+/* ===== NeuroMind PASSFORGE+ v12 — app logic ===== */
+const $=id=>document.getElementById(id);
+const VIEWS=['home','quiz','quizSetup','quizRun','quizDone','cards','cardsSetup','cardsRun','cardsDone','examStart','examRun','examResult'];
+const TABS={home:'home',quiz:'quiz',quizSetup:'quiz',quizRun:'quiz',quizDone:'quiz',cards:'cards',cardsSetup:'cards',cardsRun:'cards',cardsDone:'cards',examStart:'examStart',examRun:'examStart',examResult:'examStart'};
+
+// persistent stats
+let STATS=JSON.parse(localStorage.getItem('nm_stats')||'{"seen":0,"correct":0,"bestExam":0}');
+function saveStats(){localStorage.setItem('nm_stats',JSON.stringify(STATS));renderStats();}
+function renderStats(){
+  $('stMcq').textContent=STATS.seen;
+  $('stAcc').textContent=STATS.seen?Math.round(100*STATS.correct/STATS.seen)+'%':'—';
+  $('stStreak').textContent=STATS.bestExam?STATS.bestExam+'%':'0';
+}
+
+function go(view){
+  // sub-views inside quiz/cards are handled by toggling internal blocks
+  const groupRoot={quizSetup:'quiz',quizRun:'quiz',quizDone:'quiz',cardsSetup:'cards',cardsRun:'cards',cardsDone:'cards'}[view];
+  const root=groupRoot||view;
+  VIEWS.forEach(v=>{const el=$(v);if(el&&document.querySelector('#'+v+'.view'))el.classList.remove('active');});
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  const target=document.getElementById(root);
+  if(target)target.classList.add('active');
+  // internal blocks
+  if(root==='quiz'){toggleBlocks('quiz',view);}
+  if(root==='cards'){toggleBlocks('cards',view);}
+  // tabs
+  Object.keys(TABS).forEach(()=>{});
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  const tab=$('tab-'+(TABS[view]||root));if(tab)tab.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleBlocks(group,view){
+  const map=group==='quiz'?{quiz:'quizSetup',quizSetup:'quizSetup',quizRun:'quizRun',quizDone:'quizDone'}
+                          :{cards:'cardsSetup',cardsSetup:'cardsSetup',cardsRun:'cardsRun',cardsDone:'cardsDone'};
+  const show=map[view]||map[group];
+  const blocks=group==='quiz'?['quizSetup','quizRun','quizDone']:['cardsSetup','cardsRun','cardsDone'];
+  blocks.forEach(b=>{const el=$(b);if(el)el.classList.toggle('hide',b!==show);});
+}
+
+/* ---------- topic dropdowns ---------- */
+function fillTopics(){
+  const mt=[...new Set(MCQS.map(m=>m.topic))].sort();
+  $('quizTopic').innerHTML='<option value="__all">All topics ('+MCQS.length+')</option>'+
+    mt.map(t=>'<option value="'+t+'">'+t+' ('+MCQS.filter(m=>m.topic===t).length+')</option>').join('');
+  const ct=[...new Set(FLASHCARDS.map(f=>f.topic))].sort();
+  $('cardTopic').innerHTML='<option value="__all">All topics ('+FLASHCARDS.length+')</option>'+
+    ct.map(t=>'<option value="'+t+'">'+t+' ('+FLASHCARDS.filter(f=>f.topic===t).length+')</option>').join('');
+}
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+/* ---------- MCQ PRACTICE ---------- */
+let qOrder='rand',qSet=[],qIdx=0,qScore=0,qLocked=false;
+function setOrder(o){qOrder=o;$('ordSeq').classList.toggle('primary',o==='seq');$('ordRand').classList.toggle('primary',o==='rand');}
+function startQuiz(){
+  const t=$('quizTopic').value;
+  let pool=t==='__all'?MCQS.slice():MCQS.filter(m=>m.topic===t);
+  qSet=qOrder==='rand'?shuffle(pool):pool;
+  qIdx=0;qScore=0;
+  go('quizRun');renderQ();
+}
+function renderQ(){
+  qLocked=false;
+  const m=qSet[qIdx];
+  $('qTopic').textContent=m.topic;
+  $('qCount').textContent=(qIdx+1)+' / '+qSet.length;
+  $('qProg').style.width=(100*qIdx/qSet.length)+'%';
+  $('qText').textContent=m.q;
+  $('qExplain').innerHTML='';
+  $('qNext').textContent=qIdx+1<qSet.length?'Next →':'Finish';
+  const keys=['A','B','C','D','E'];
+  $('qOpts').innerHTML=m.o.map((o,i)=>
+    '<button class="opt" data-i="'+i+'" onclick="answerQ('+i+')"><span class="key">'+keys[i]+'</span><span>'+esc(o)+'</span></button>').join('');
+}
+function answerQ(i){
+  if(qLocked)return;qLocked=true;
+  const m=qSet[qIdx];
+  STATS.seen++;if(i===m.a){STATS.correct++;qScore++;}
+  saveStats();
+  const opts=[...$('qOpts').children];
+  opts.forEach((el,idx)=>{
+    el.setAttribute('disabled','');
+    if(idx===m.a)el.classList.add('correct');
+    else if(idx===i)el.classList.add('wrong');
+    else el.classList.add('dim');
+  });
+  $('qExplain').innerHTML='<div class="explain"><b>'+(i===m.a?'Correct. ':'Answer: '+['A','B','C','D','E'][m.a]+'. ')+'</b>'+esc(m.exp)+'</div>';
+}
+function nextQuiz(){
+  if(!qLocked){ // allow skipping forward only if answered; else just advance
+  }
+  if(qIdx+1<qSet.length){qIdx++;renderQ();}
+  else{
+    $('quizScore').textContent=qScore+'/'+qSet.length;
+    $('quizPct').textContent=Math.round(100*qScore/qSet.length)+'% correct';
+    go('quizDone');
+  }
+}
+
+/* ---------- FLASHCARDS ---------- */
+let cSet=[],cIdx=0,cGot=0,cFlipped=false,cAgain=[];
+function startCards(deck){
+  const t=$('cardTopic').value;
+  let pool=deck||(t==='__all'?FLASHCARDS.slice():FLASHCARDS.filter(f=>f.topic===t));
+  cSet=shuffle(pool);cIdx=0;cGot=0;cAgain=[];
+  go('cardsRun');renderCard();
+}
+function renderCard(){
+  cFlipped=false;$('flipCard').classList.remove('flipped');
+  const c=cSet[cIdx];
+  $('cTopic').textContent=c.topic;
+  $('cCount').textContent=(cIdx+1)+' / '+cSet.length;
+  $('cProg').style.width=(100*cIdx/cSet.length)+'%';
+  $('cFront').textContent=c.f;
+  $('cBack').textContent=c.b;
+}
+function flipCard(){cFlipped=!cFlipped;$('flipCard').classList.toggle('flipped',cFlipped);}
+function markCard(got){
+  if(got)cGot++;else cAgain.push(cSet[cIdx]);
+  if(cIdx+1<cSet.length){cIdx++;renderCard();}
+  else{
+    $('cardsGot').textContent=cGot+'/'+cSet.length;
+    const redo=$('cardsRedo');
+    if(cAgain.length){redo.classList.remove('hide');redo.onclick=()=>startCards(cAgain.slice());}
+    else redo.classList.add('hide');
+    go('cardsDone');
+  }
+}
+
+/* ---------- TIMED MOCK EXAM ---------- */
+let examMins=120,examMcq=[],examSaq=[],examAns={},examTotalQ=0,examIdx=0,examTimer=null,examEndTs=0;
+function setExamTime(m){examMins=m;['tm120','tm60','tm0'].forEach(id=>$(id).classList.remove('primary'));
+  $(m===120?'tm120':m===60?'tm60':'tm0').classList.add('primary');}
+function startExam(){
+  examMcq=MCQS.slice(0,40); // full Section A in canonical order
+  examSaq=SAQS.slice(0,10);
+  examTotalQ=examMcq.length+examSaq.length;
+  examAns={};examIdx=0;
+  if(examMins>0){examEndTs=Date.now()+examMins*60000;startExamTimer();}
+  else{$('exTimer').textContent='—';if(examTimer)clearInterval(examTimer);}
+  buildPalette();go('examRun');renderExam();
+}
+function startExamTimer(){
+  if(examTimer)clearInterval(examTimer);
+  const tick=()=>{
+    let s=Math.max(0,Math.round((examEndTs-Date.now())/1000));
+    const h=Math.floor(s/3600),mm=Math.floor((s%3600)/60),ss=s%60;
+    $('exTimer').textContent=(h?h+':':'')+String(mm).padStart(h?2:1,'0')+':'+String(ss).padStart(2,'0');
+    $('exTimer').classList.toggle('low',s<300);
+    if(s<=0){clearInterval(examTimer);submitExam(true);}
+  };
+  tick();examTimer=setInterval(tick,1000);
+}
+function buildPalette(){
+  let html='';
+  for(let i=0;i<examTotalQ;i++){html+='<button class="pdot" id="pd'+i+'" onclick="examGoto('+i+')">'+(i+1)+'</button>';}
+  $('exPalette').innerHTML=html;
+}
+function examGoto(i){examIdx=i;renderExam();}
+function examNav(d){const n=examIdx+d;if(n>=0&&n<examTotalQ){examIdx=n;renderExam();}}
+function renderExam(){
+  $('exProg').style.width=(100*examIdx/examTotalQ)+'%';
+  document.querySelectorAll('.pdot').forEach((el,i)=>{
+    el.classList.toggle('current',i===examIdx);
+    el.classList.toggle('answered',examAns[i]!==undefined&&examAns[i]!=='' && examAns[i]!==null);
+  });
+  $('exPrev').disabled=examIdx===0;
+  $('exNext').disabled=examIdx===examTotalQ-1;
+  const isMcq=examIdx<examMcq.length;
+  if(isMcq){
+    const m=examMcq[examIdx];
+    $('exSection').textContent='Section A · MCQ';
+    $('exQNum').textContent='Q'+(examIdx+1);
+    $('exMarks').textContent='1 mark · '+m.topic;
+    $('exQText').textContent=m.q;
+    const keys=['A','B','C','D','E'];const cur=examAns[examIdx];
+    $('exBody').innerHTML=m.o.map((o,i)=>
+      '<button class="opt'+(cur===i?' correct':'')+'" onclick="pickExam('+i+')"><span class="key">'+keys[i]+'</span><span>'+esc(o)+'</span></button>').join('');
+  }else{
+    const si=examIdx-examMcq.length;const s=examSaq[si];
+    $('exSection').textContent='Section B · Short answer';
+    $('exQNum').textContent=s.q.split('.')[0];
+    $('exMarks').textContent='self-marked';
+    $('exQText').textContent=s.q.replace(/^Q\d+\.\s*/,'');
+    $('exBody').innerHTML='<p class="muted small" style="white-space:pre-wrap;margin-top:0;">'+esc(s.prompt)+'</p>'+
+      '<textarea id="saqInput" placeholder="Type your answer (or note key points)…" '+
+      'style="width:100%;min-height:140px;background:var(--card2);color:var(--txt);border:1px solid var(--line2);border-radius:10px;padding:12px;font:inherit;font-size:.92rem;resize:vertical;">'+
+      esc(examAns[examIdx]||'')+'</textarea>';
+    $('saqInput').addEventListener('input',e=>{examAns[examIdx]=e.target.value;document.getElementById('pd'+examIdx).classList.toggle('answered',!!e.target.value.trim());});
+  }
+}
+function pickExam(i){examAns[examIdx]=i;renderExam();}
+function confirmSubmit(){
+  const ansd=Object.keys(examAns).filter(k=>examAns[k]!==undefined&&examAns[k]!==''&&examAns[k]!==null).length;
+  if(confirm('Submit exam? You have responded to '+ansd+' of '+examTotalQ+' questions.'))submitExam(false);
+}
+function submitExam(auto){
+  if(examTimer)clearInterval(examTimer);
+  let mcqScore=0;
+  examMcq.forEach((m,i)=>{if(examAns[i]===m.a)mcqScore++;});
+  const pct=Math.round(100*mcqScore/examMcq.length);
+  if(pct>STATS.bestExam){STATS.bestExam=pct;saveStats();}
+  $('exMcqScore').textContent=mcqScore+'/'+examMcq.length;
+  // section A review
+  const keys=['A','B','C','D','E'];
+  $('exReview').innerHTML=examMcq.map((m,i)=>{
+    const got=examAns[i];const ok=got===m.a;
+    return '<div class="review-item"><div style="display:flex;justify-content:space-between;gap:8px;"><b>Q'+(i+1)+'</b>'+
+      '<span class="badge '+(ok?'ok':'no')+'">'+(ok?'correct':(got===undefined?'blank':'wrong'))+'</span></div>'+
+      '<div class="small" style="margin:6px 0;">'+esc(m.q)+'</div>'+
+      '<div class="small muted">Answer: <b style="color:var(--good)">'+keys[m.a]+'. '+esc(m.o[m.a])+'</b>'+
+      (got!==undefined&&!ok?' · you chose '+keys[got]:'')+'</div>'+
+      '<div class="explain small" style="margin-top:8px;">'+esc(m.exp)+'</div></div>';
+  }).join('');
+  // section B model answers
+  $('exSaqReview').innerHTML=examSaq.map((s,si)=>{
+    const idx=examMcq.length+si;const yours=examAns[idx]||'';
+    return '<div class="review-item"><b>'+esc(s.q)+'</b>'+
+      '<div class="small muted" style="white-space:pre-wrap;margin:6px 0;">'+esc(s.prompt)+'</div>'+
+      (yours?'<div class="small" style="white-space:pre-wrap;background:var(--bg2);border-radius:8px;padding:10px;margin:6px 0;"><b>Your answer:</b>\n'+esc(yours)+'</div>':'')+
+      '<details><summary class="small" style="cursor:pointer;color:var(--acc2);">Reveal model answer</summary>'+
+      '<div class="saq-model">'+esc(s.model)+'</div></details></div>';
+  }).join('');
+  updateTotal();
+  $('sbScore').oninput=updateTotal;
+  function updateTotal(){
+    let sb=Math.max(0,Math.min(60,parseInt($('sbScore').value)||0));
+    $('exTotal').textContent=(mcqScore+sb)+' / 100';
+  }
+  go('examResult');
+  if(auto)setTimeout(()=>alert("Time's up — exam auto-submitted."),200);
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ---------- init ---------- */
+fillTopics();renderStats();go('home');
+</script>
+</body>
+</html>
